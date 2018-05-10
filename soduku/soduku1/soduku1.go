@@ -7,14 +7,54 @@ import (
 
 type Contex struct {
 	// 已经求解的
-	solved int
+	solved *int
 
 	// 数独表
-	table common.Table
+	table *common.Table
 }
 
-func solve(ctx *Contex) {
+func (ctx *Contex) isSolved() bool {
+	if *ctx.solved == 9*9 {
+		return true
+	} else {
+		return false
+	}
+}
 
+func solve(ctx *Contex, pos common.Pos) bool {
+	if ctx.isSolved() {
+		return true
+	}
+
+	row, col := pos.GetRowCol()
+	if ctx.table[row][col] != 0 {
+		*ctx.solved += 1
+		newPos := pos.NextPos()
+		if solve(ctx, newPos) {
+			return true
+		} else {
+			*ctx.solved -= 1
+			return false
+		}
+	}
+
+	for i := 1; i <= 9; i ++ {
+		ctx.table[row][col] = i
+		if ctx.table.IsValid(pos) {
+			*ctx.solved += 1
+			newPos := pos.NextPos()
+			if solve(ctx, newPos) {
+				return true
+			} else {
+				if i == 9 {
+					ctx.table[row][col] = 0
+					*ctx.solved -= 1
+				}
+			}
+		}
+	}
+
+	return false
 }
 
 func main() {
@@ -27,6 +67,13 @@ func main() {
 
 	fmt.Println(table)
 
-	cols := table.GetCol(4)
-	fmt.Println(cols)
+	ctx := &Contex{solved: new(int), table: table}
+	var pos common.Pos
+	if solve(ctx, pos) {
+		fmt.Println("ok")
+		fmt.Println(table)
+	} else {
+		fmt.Println("error")
+		fmt.Println(table)
+	}
 }

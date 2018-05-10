@@ -3,6 +3,7 @@ package common
 import (
 	"errors"
 	"strconv"
+	"github.com/yqsy/algorithm/repeat_number/repeat_hash"
 )
 
 type Row [9]int
@@ -11,10 +12,35 @@ type Table [9]Row
 
 type Cols [9]int
 
+// 0 ~ 80
+type Pos int
+
+func (pos *Pos) GetRowCol() (int, int) {
+	row := *pos / 9
+	col := *pos % 9
+	return int(row), int(col)
+}
+
+func (pos *Pos) NextPos() Pos {
+	nextPos := *pos + 1
+	return nextPos
+}
+
 // 刚填完一个cell对cell的row和col做合法校验
-func (table *Table) IsValid(row, col int) bool {
+func (table *Table) IsValid(pos Pos) bool {
+	row, col := pos.GetRowCol()
+
 	// row check
-	//checkRow := table[row]
+	checkRow := table[row]
+	if repeat_hash.IsArrayRepeatIgnoreZero(checkRow[:]) {
+		return false
+	}
+
+	// col check
+	checkCol := table.GetCol(col)
+	if repeat_hash.IsArrayRepeatIgnoreZero(checkCol[:]) {
+		return false
+	}
 
 	return true
 }
