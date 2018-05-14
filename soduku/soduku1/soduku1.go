@@ -5,54 +5,32 @@ import (
 	"fmt"
 )
 
-type Contex struct {
-	// 已经求解的
-	solved *int
-
-	// 数独表
-	table *common.Table
-}
-
-func (ctx *Contex) isSolved() bool {
-	if *ctx.solved == 9*9 {
-		return true
-	} else {
-		return false
-	}
-}
-
-func solve(ctx *Contex, pos common.Pos) bool {
-	if ctx.isSolved() {
+func solve(table *common.Table, pos int) bool {
+	// pos 0 ~ 80
+	if pos > 80 {
 		return true
 	}
 
-	row, col := pos.GetRowCol()
-	if ctx.table[row][col] == 0 {
+	row, col := pos/9, pos%9
+	if table[row][col] == 0 {
 		// 本格子待猜测
 		for i := 1; i <= 9; i++ {
-			ctx.table[row][col] = byte(i)
-			if ctx.table.IsValid(pos) {
-				*ctx.solved += 1
-				nextPost := pos.NextPos()
-				if solve(ctx, nextPost) {
+			table[row][col] = byte(i)
+			if table.IsValid(row, col) {
+				if solve(table, pos+1) {
 					return true
-				} else {
-					*ctx.solved -= 1
 				}
 			}
 		}
 
 		// 本格子遍历完所有的数字都不行,重置下
-		ctx.table[row][col] = 0
+		table[row][col] = 0
 		return false
 	} else {
 		// 本格子已完成
-		*ctx.solved += 1
-		nextPost := pos.NextPos()
-		if solve(ctx, nextPost) {
+
+		if solve(table, pos+1) {
 			return true
-		} else {
-			*ctx.solved -= 1
 		}
 		return false
 	}
@@ -70,9 +48,8 @@ func main() {
 
 	fmt.Println(table)
 
-	ctx := &Contex{solved: new(int), table: table}
-	var pos common.Pos
-	if solve(ctx, pos) {
+	var pos int
+	if solve(table, pos) {
 		fmt.Println("ok")
 		fmt.Println(table)
 	} else {
