@@ -17,12 +17,12 @@ func IsArrayRepeat(array []int) bool {
 	return false
 }
 
-func IsArrayRepeatIgnoreZero(array []int) bool {
+func IsArrayRepeatIgnoreZero(array []byte) bool {
 	if len(array) < 2 {
 		return false
 	}
 
-	d := make(map[int]struct{})
+	d := make(map[byte]struct{})
 
 	for i := 0; i < len(array); i++ {
 

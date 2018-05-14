@@ -6,11 +6,11 @@ import (
 	"github.com/yqsy/algorithm/repeat_number/repeat_hash"
 )
 
-type Row [9]int
+type Row [9]byte
 
 type Table [9]Row
 
-type Cols [9]int
+type Cols [9]byte
 
 // 0 ~ 80
 type Pos int
@@ -37,7 +37,7 @@ func (table *Table) IsValid(pos Pos) bool {
 	}
 
 	// col check
-	checkCol := table.GetCol(col)
+	checkCol := table.getCol(col)
 	if repeat_hash.IsArrayRepeatIgnoreZero(checkCol[:]) {
 		return false
 	}
@@ -46,7 +46,7 @@ func (table *Table) IsValid(pos Pos) bool {
 }
 
 // 给定列号,获取该列所有的元素
-func (table *Table) GetCol(col int) *Cols {
+func (table *Table) getCol(col int) *Cols {
 	cols := &Cols{}
 
 	for row := 0; row < 9; row++ {
@@ -77,7 +77,7 @@ func ConvertLineToTable(line string) (*Table, error) {
 				return nil, errors.New("line convert error")
 			}
 
-			table[row][col] = n
+			table[row][col] = byte(n)
 		}
 	}
 

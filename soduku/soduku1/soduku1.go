@@ -27,38 +27,41 @@ func solve(ctx *Contex, pos common.Pos) bool {
 	}
 
 	row, col := pos.GetRowCol()
-	if ctx.table[row][col] != 0 {
-		*ctx.solved += 1
-		newPos := pos.NextPos()
-		if solve(ctx, newPos) {
-			return true
-		} else {
-			*ctx.solved -= 1
-			return false
-		}
-	}
-
-	for i := 1; i <= 9; i ++ {
-		ctx.table[row][col] = i
-		if ctx.table.IsValid(pos) {
-			*ctx.solved += 1
-			newPos := pos.NextPos()
-			if solve(ctx, newPos) {
-				return true
-			} else {
-				if i == 9 {
-					ctx.table[row][col] = 0
+	if ctx.table[row][col] == 0 {
+		// 本格子待猜测
+		for i := 1; i <= 9; i++ {
+			ctx.table[row][col] = byte(i)
+			if ctx.table.IsValid(pos) {
+				*ctx.solved += 1
+				nextPost := pos.NextPos()
+				if solve(ctx, nextPost) {
+					return true
+				} else {
 					*ctx.solved -= 1
 				}
 			}
 		}
-	}
 
-	return false
+		// 本格子遍历完所有的数字都不行,重置下
+		ctx.table[row][col] = 0
+		return false
+	} else {
+		// 本格子已完成
+		*ctx.solved += 1
+		nextPost := pos.NextPos()
+		if solve(ctx, nextPost) {
+			return true
+		} else {
+			*ctx.solved -= 1
+		}
+		return false
+	}
 }
 
 func main() {
-	problem := "904002100032100907100790000800070000765040813000030002000018006208007390007900501\r\n"
+	//problem := "000000010400000000020000000000050407008000300001090000300400200050100000000806000\r\n"
+
+	problem := "080001030500804706000270000920400003103958402400002089000029000305106008040300010"
 
 	table, err := common.ConvertLineToTable(problem)
 	if err != nil {
