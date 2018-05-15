@@ -1,4 +1,4 @@
-package sudoku2
+package sudoku3
 
 import (
 	"github.com/yqsy/algorithm/sudoku/common"
@@ -16,8 +16,11 @@ func Solve(table *common.Table, candidate *common.Candidate, pos int) bool {
 		for k, _ := range (*candidate)[row][col] {
 			(*table)[row][col] = k
 			if table.IsValid(row, col) {
+				candidate.ClearCandidate(k, row, col)
 				if Solve(table, candidate, pos+1) {
 					return true
+				} else {
+					candidate.RestoreCandidate(k, row, col)
 				}
 			}
 			(*table)[row][col] = 0

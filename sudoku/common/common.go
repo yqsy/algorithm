@@ -10,9 +10,9 @@ type Table [][]byte
 type Candidate [][]map[byte]struct{}
 
 // 合法性校验
-func (table *Table) IsValid(row int, col int) bool {
+func (table *Table) IsValid(row, col int) bool {
 
-	// 横向一列 chec
+	// 横向一列 check
 	for i := 0; i < 9; i++ {
 		if col != i && (*table)[row][col] == (*table)[row][i] {
 			return false
@@ -60,12 +60,13 @@ func (table *Table) GetCandidate() *Candidate {
 		}
 	}
 
+	// 首次候选数排除
 	for row := 0; row < 9; row++ {
 		for col := 0; col < 9; col++ {
 			exist := (*table)[row][col]
 			if exist != 0 {
 				// 横向一列 清除
-				for i := 0; i < 9; i++ {
+				for i := 0; i < 9; i ++ {
 					delete((*candidate)[row][i], exist)
 				}
 
@@ -87,6 +88,64 @@ func (table *Table) GetCandidate() *Candidate {
 	}
 
 	return candidate
+}
+
+// 动态清除候选数
+func (candidate *Candidate) ClearCandidate(exist byte, row, col int) {
+	// 横向一列 清除
+	for i := 0; i < 9; i ++ {
+		if col != i {
+			delete((*candidate)[row][i], exist)
+		}
+	}
+
+	// 竖向一列 清除
+	for i := 0; i < 9; i++ {
+		if row != i {
+			delete((*candidate)[i][col], exist)
+		}
+	}
+
+	// 小九宫格 清除
+	cellRowBegin := row / 3 * 3
+	cellColBegin := col / 3 * 3
+	for i := cellRowBegin; i < cellRowBegin+3; i++ {
+		for j := cellColBegin; j < cellColBegin+3; j++ {
+
+			if row != i && col != j {
+				delete((*candidate)[i][j], exist)
+			}
+		}
+	}
+}
+
+// 恢复动态清除的候选数
+func (candidate *Candidate) RestoreCandidate(exist byte, row, col int) {
+	// 横向一列 恢复
+	for i := 0; i < 9; i ++ {
+		if col != i {
+			(*candidate)[row][i][exist] = struct{}{}
+		}
+	}
+
+	// 竖向一列 恢复
+	for i := 0; i < 9; i++ {
+		if row != i {
+			(*candidate)[i][col][exist] = struct{}{}
+		}
+	}
+
+	// 小九宫格 恢复
+	cellRowBegin := row / 3 * 3
+	cellColBegin := col / 3 * 3
+	for i := cellRowBegin; i < cellRowBegin+3; i++ {
+		for j := cellColBegin; j < cellColBegin+3; j++ {
+
+			if row != i && col != j {
+				(*candidate)[i][j][exist] = struct{}{}
+			}
+		}
+	}
 }
 
 // only support 9 x 9
