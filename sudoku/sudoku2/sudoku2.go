@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/yqsy/algorithm/soduku/common"
+	"github.com/yqsy/algorithm/sudoku/common"
 	"fmt"
 )
 
