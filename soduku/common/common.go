@@ -7,6 +7,8 @@ import (
 
 type Table [][]byte
 
+type Candidate [][]map[byte]struct{}
+
 // 合法性校验
 func (table *Table) IsValid(row int, col int) bool {
 
@@ -40,6 +42,51 @@ func (table *Table) IsValid(row int, col int) bool {
 	}
 
 	return true
+}
+
+// 获取候选数表格
+func (table *Table) GetCandidate() *Candidate {
+	candidate := &Candidate{}
+	*candidate = make([][]map[byte]struct{}, 9)
+	for row := 0; row < 9; row++ {
+		(*candidate)[row] = make([]map[byte]struct{}, 9)
+		for col := 0; col < 9; col++ {
+			(*candidate)[row][col] = make(map[byte]struct{})
+
+			// 安插候选数
+			for i := 1; i <= 9; i++ {
+				(*candidate)[row][col][byte(i)] = struct{}{}
+			}
+		}
+	}
+
+	for row := 0; row < 9; row++ {
+		for col := 0; col < 9; col++ {
+			exist := (*table)[row][col]
+			if exist != 0 {
+				// 横向一列 清除
+				for i := 0; i < 9; i++ {
+					delete((*candidate)[row][i], exist)
+				}
+
+				// 竖向一列 清除
+				for i := 0; i < 9; i++ {
+					delete((*candidate)[i][col], exist)
+				}
+
+				// 小九宫格 清除
+				cellRowBegin := row / 3 * 3
+				cellColBegin := col / 3 * 3
+				for i := cellRowBegin; i < cellRowBegin+3; i++ {
+					for j := cellColBegin; j < cellColBegin+3; j++ {
+						delete((*candidate)[i][j], exist)
+					}
+				}
+			}
+		}
+	}
+
+	return candidate
 }
 
 // only support 9 x 9
