@@ -12,27 +12,21 @@ func solve(table *common.Table, pos int) bool {
 	}
 
 	row, col := pos/9, pos%9
-	if table[row][col] == 0 {
+	if (*table)[row][col] == 0 {
 		// 本格子待猜测
 		for i := 1; i <= 9; i++ {
-			table[row][col] = byte(i)
+			(*table)[row][col] = byte(i)
 			if table.IsValid(row, col) {
 				if solve(table, pos+1) {
 					return true
 				}
 			}
+			(*table)[row][col] = 0
 		}
-
-		// 本格子遍历完所有的数字都不行,重置下
-		table[row][col] = 0
 		return false
 	} else {
 		// 本格子已完成
-
-		if solve(table, pos+1) {
-			return true
-		}
-		return false
+		return solve(table, pos+1)
 	}
 }
 

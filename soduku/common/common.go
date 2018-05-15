@@ -5,60 +5,41 @@ import (
 	"strconv"
 )
 
-type Row [9]byte
+type Table [][]byte
 
-type Table [9]Row
-
-type Cols [9]byte
-
-func IsArrayRepeatIgnoreZero(array []byte) bool {
-	if len(array) < 2 {
-		return false
-	}
-
-	d := make(map[byte]struct{})
-
-	for i := 0; i < len(array); i++ {
-
-		if array[i] == 0 {
-			continue
-		}
-
-		if _, ok := d[array[i]]; ok {
-			return true
-		}
-		d[array[i]] = struct{}{}
-	}
-
-	return false
-}
-
-// 刚填完一个cell对cell的row和col做合法校验
+// 合法性校验
 func (table *Table) IsValid(row int, col int) bool {
-	// row check
-	checkRow := table[row]
-	if IsArrayRepeatIgnoreZero(checkRow[:]) {
-		return false
+
+	// 横向一列 chec
+	for i := 0; i < 9; i++ {
+		if col != i && (*table)[row][col] == (*table)[row][i] {
+			return false
+		}
 	}
 
-	// col check
-	checkCol := table.getCol(col)
-	if IsArrayRepeatIgnoreZero(checkCol[:]) {
-		return false
+	// 竖向一列 check
+	for i := 0; i < 9; i++ {
+		if row != i && (*table)[row][col] == (*table)[i][col] {
+			return false
+		}
+	}
+
+	// 小九宫格 check
+	cellRowBegin := row / 3 * 3
+	cellColBegin := col / 3 * 3
+	for i := cellRowBegin; i < cellRowBegin+3; i++ {
+		for j := cellColBegin; j < cellColBegin+3; j++ {
+			if row == i && col == j {
+				continue
+			}
+
+			if (*table)[row][col] == (*table)[i][j] {
+				return false
+			}
+		}
 	}
 
 	return true
-}
-
-// 给定列号,获取该列所有的元素
-func (table *Table) getCol(col int) *Cols {
-	cols := &Cols{}
-
-	for row := 0; row < 9; row++ {
-		cols[row] = table[row][col]
-	}
-
-	return cols
 }
 
 // only support 9 x 9
@@ -74,6 +55,11 @@ func ConvertLineToTable(line string) (*Table, error) {
 	}
 
 	table := &Table{}
+	*table = make([][]byte, 9)
+	for i := 0; i < 9; i++ {
+		(*table)[i] = make([]byte, 9)
+	}
+
 	for row := 0; row < 9; row++ {
 		for col := 0; col < 9; col++ {
 
@@ -82,7 +68,7 @@ func ConvertLineToTable(line string) (*Table, error) {
 				return nil, errors.New("line convert error")
 			}
 
-			table[row][col] = byte(n)
+			(*table)[row][col] = byte(n)
 		}
 	}
 
