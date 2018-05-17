@@ -107,3 +107,15 @@ func ConvertLineToTable(line string) (*Table, error) {
 
 	return table, nil
 }
+
+func (table *Table) GetLine() string {
+	var line string
+
+	for row := 0; row < 9; row++ {
+		for col := 0; col < 9; col++ {
+			line += strconv.Itoa(int(table.Tb[row][col]))
+		}
+	}
+
+	return line
+}
