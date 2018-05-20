@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"time"
+	"fmt"
+)
 
 type Context struct {
 	board [][]byte
@@ -75,6 +78,10 @@ func solveNQueens(n int) [][]string {
 }
 
 func main() {
+
+	t1 := time.Now()
 	result := solveNQueens(8)
-	fmt.Print(result)
+	_ = result
+	escaped := float64(time.Since(t1).Nanoseconds()) / 1000
+	fmt.Printf("esacped: %.2f us\n", escaped)
 }
