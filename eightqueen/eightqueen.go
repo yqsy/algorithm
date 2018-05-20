@@ -22,6 +22,26 @@ type Context struct {
 	skewsBack []bool
 }
 
+func (ctx *Context) setCell(row, col, n int, b bool) {
+	ctx.board[row][col] = b
+	ctx.rows[row] = b
+	ctx.cols[col] = b
+	ctx.skewsForward[row+col] = b
+	ctx.skewsBack[(n-1-row)+col] = b
+}
+
+func (ctx *Context) check(row, col, n int) bool {
+	if !ctx.rows[row] &&
+		!ctx.cols[col] &&
+		!ctx.skewsForward[row+col] &&
+		!ctx.skewsBack[(n-1-row)+col] {
+		return true
+	} else {
+		return false
+	}
+
+}
+
 func solve(pos, n int, ctx *Context) {
 	if pos == n*n {
 		copyBoard := make([][]bool, n)
@@ -39,18 +59,10 @@ func solve(pos, n int, ctx *Context) {
 	}
 
 	row, col := pos/n, pos%n
-	if !ctx.rows[row] && !ctx.cols[col] && !ctx.skewsForward[row+col] && !ctx.skewsBack[(n-1-row)+col] {
-		ctx.board[row][col] = true
-		ctx.rows[row] = true
-		ctx.cols[col] = true
-		ctx.skewsForward[row+col] = true
-		ctx.skewsBack[(n-1-row)+col] = true
+	if ctx.check(row, col, n) {
+		ctx.setCell(row, col, n, true)
 		solve(pos+1, n, ctx)
-		ctx.board[row][col] = false
-		ctx.rows[row] = false
-		ctx.cols[col] = false
-		ctx.skewsForward[row+col] = false
-		ctx.skewsBack[(n-1-row)+col] = false
+		ctx.setCell(row, col, n, false)
 		solve(pos+1, n, ctx)
 	} else {
 		solve(pos+1, n, ctx)
