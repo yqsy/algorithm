@@ -2,12 +2,10 @@ package main
 
 import "fmt"
 
-type Board [][]bool
-
 type Context struct {
-	board Board
+	board [][]byte
 
-	solvedBoards []Board
+	solvedBoards [][]string
 
 	// 竖向候选
 	cols []bool
@@ -19,24 +17,11 @@ type Context struct {
 	skewsBack []bool
 }
 
-func (ctx *Context) copy(n int) Board {
-	copyBoard := make([][]bool, n)
-	for i := 0; i < n; i++ {
-		copyBoard[i] = make([]bool, n)
-	}
-	for row := 0; row < n; row++ {
-		for col := 0; col < n; col++ {
-			copyBoard[row][col] = ctx.board[row][col]
-		}
-	}
-	return copyBoard
-}
-
-func (ctx *Context) setCell(row, col, n int, b bool) {
+func (ctx *Context) setCell(row, col, n int, b byte, flag bool) {
 	ctx.board[row][col] = b
-	ctx.cols[col] = b
-	ctx.skewsForward[row+col] = b
-	ctx.skewsBack[(n-1-row)+col] = b
+	ctx.cols[col] = flag
+	ctx.skewsForward[row+col] = flag
+	ctx.skewsBack[(n-1-row)+col] = flag
 }
 
 func (ctx *Context) check(row, col, n int) bool {
@@ -51,7 +36,11 @@ func (ctx *Context) check(row, col, n int) bool {
 
 func solve(row, n int, ctx *Context) {
 	if row == n {
-		ctx.solvedBoards = append(ctx.solvedBoards, ctx.copy(n))
+		table := make([]string, n)
+		for i, chessRow := range ctx.board {
+			table[i] = string(chessRow[:])
+		}
+		ctx.solvedBoards = append(ctx.solvedBoards, table)
 		return
 	}
 
@@ -60,17 +49,21 @@ func solve(row, n int, ctx *Context) {
 		if !ctx.check(row, i, n) {
 			continue
 		}
-		ctx.setCell(row, i, n, true)
+		ctx.setCell(row, i, n, 'Q', true)
 		solve(row+1, n, ctx)
-		ctx.setCell(row, i, n, false)
+		ctx.setCell(row, i, n, '.', false)
 	}
 }
 
 func solveNQueens(n int) [][]string {
 	ctx := Context{}
-	ctx.board = make([][]bool, n)
+	ctx.board = make([][]byte, n)
 	for i := 0; i < n; i++ {
-		ctx.board[i] = make([]bool, n)
+		ctx.board[i] = make([]byte, n)
+
+		for j := 0; j < n; j++ {
+			ctx.board[i][j] = '.'
+		}
 	}
 	ctx.cols = make([]bool, n)
 	ctx.skewsForward = make([]bool, 2*n-1)
@@ -78,24 +71,7 @@ func solveNQueens(n int) [][]string {
 
 	solve(0, n, &ctx)
 
-	result := make([][]string, len(ctx.solvedBoards))
-	for i := 0; i < len(ctx.solvedBoards); i++ {
-		var oneBoard []string
-		for row := 0; row < n; row++ {
-			var line string
-			for col := 0; col < n; col++ {
-				if ctx.solvedBoards[i][row][col] {
-					line = line + "Q"
-				} else {
-					line = line + "."
-				}
-			}
-			oneBoard = append(oneBoard, line)
-		}
-		result[i] = oneBoard
-	}
-
-	return result
+	return ctx.solvedBoards
 }
 
 func main() {
