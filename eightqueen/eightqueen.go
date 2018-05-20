@@ -52,23 +52,22 @@ func (ctx *Context) check(row, col, n int) bool {
 	} else {
 		return false
 	}
-
 }
 
-func solve(pos, n int, ctx *Context) {
-	if pos == n*n {
+func solve(row, n int, ctx *Context) {
+	if row == n {
 		ctx.solvedBoards = append(ctx.solvedBoards, ctx.copy(n))
 		return
 	}
 
-	row, col := pos/n, pos%n
-	if ctx.check(row, col, n) {
-		ctx.setCell(row, col, n, true)
-		solve(pos+1, n, ctx)
-		ctx.setCell(row, col, n, false)
-		solve(pos+1, n, ctx)
-	} else {
-		solve(pos+1, n, ctx)
+	// 横向每一格进行尝试
+	for i := 0; i < n; i++ {
+		if !ctx.check(row, i, n) {
+			continue
+		}
+		ctx.setCell(row, i, n, true)
+		solve(row+1, n, ctx)
+		ctx.setCell(row, i, n, false)
 	}
 }
 
@@ -78,7 +77,6 @@ func solveNQueens(n int) [][]string {
 	for i := 0; i < n; i++ {
 		ctx.board[i] = make([]bool, n)
 	}
-
 	ctx.rows = make([]bool, n)
 	ctx.cols = make([]bool, n)
 	ctx.skewsForward = make([]bool, 2*n-1)
@@ -86,11 +84,27 @@ func solveNQueens(n int) [][]string {
 
 	solve(0, n, &ctx)
 
-	fmt.Print(len(ctx.solvedBoards))
+	result := make([][]string, len(ctx.solvedBoards))
+	for i := 0; i < len(ctx.solvedBoards); i++ {
+		var oneBoard []string
+		for row := 0; row < n; row++ {
+			var line string
+			for col := 0; col < n; col++ {
+				if ctx.solvedBoards[i][row][col] {
+					line = line + "Q"
+				} else {
+					line = line + "."
+				}
+			}
+			oneBoard = append(oneBoard, line)
+		}
+		result[i] = oneBoard
+	}
 
-	return [][]string{}
+	return result
 }
 
 func main() {
-	solveNQueens(8)
+	result := solveNQueens(8)
+	fmt.Print(result)
 }
