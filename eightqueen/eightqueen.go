@@ -22,6 +22,19 @@ type Context struct {
 	skewsBack []bool
 }
 
+func (ctx *Context) copy(n int) Board {
+	copyBoard := make([][]bool, n)
+	for i := 0; i < n; i++ {
+		copyBoard[i] = make([]bool, n)
+	}
+	for row := 0; row < n; row++ {
+		for col := 0; col < n; col++ {
+			copyBoard[row][col] = ctx.board[row][col]
+		}
+	}
+	return copyBoard
+}
+
 func (ctx *Context) setCell(row, col, n int, b bool) {
 	ctx.board[row][col] = b
 	ctx.rows[row] = b
@@ -44,17 +57,7 @@ func (ctx *Context) check(row, col, n int) bool {
 
 func solve(pos, n int, ctx *Context) {
 	if pos == n*n {
-		copyBoard := make([][]bool, n)
-		for i := 0; i < n; i++ {
-			copyBoard[i] = make([]bool, n)
-		}
-
-		for row := 0; row < n; row++ {
-			for col := 0; col < n; col++ {
-				copyBoard[row][col] = ctx.board[row][col]
-			}
-		}
-		ctx.solvedBoards = append(ctx.solvedBoards, copyBoard)
+		ctx.solvedBoards = append(ctx.solvedBoards, ctx.copy(n))
 		return
 	}
 
