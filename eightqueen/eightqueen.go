@@ -9,9 +9,6 @@ type Context struct {
 
 	solvedBoards []Board
 
-	// 横向候选
-	rows []bool
-
 	// 竖向候选
 	cols []bool
 
@@ -37,15 +34,13 @@ func (ctx *Context) copy(n int) Board {
 
 func (ctx *Context) setCell(row, col, n int, b bool) {
 	ctx.board[row][col] = b
-	ctx.rows[row] = b
 	ctx.cols[col] = b
 	ctx.skewsForward[row+col] = b
 	ctx.skewsBack[(n-1-row)+col] = b
 }
 
 func (ctx *Context) check(row, col, n int) bool {
-	if !ctx.rows[row] &&
-		!ctx.cols[col] &&
+	if !ctx.cols[col] &&
 		!ctx.skewsForward[row+col] &&
 		!ctx.skewsBack[(n-1-row)+col] {
 		return true
@@ -77,7 +72,6 @@ func solveNQueens(n int) [][]string {
 	for i := 0; i < n; i++ {
 		ctx.board[i] = make([]bool, n)
 	}
-	ctx.rows = make([]bool, n)
 	ctx.cols = make([]bool, n)
 	ctx.skewsForward = make([]bool, 2*n-1)
 	ctx.skewsBack = make([]bool, 2*n-1)
