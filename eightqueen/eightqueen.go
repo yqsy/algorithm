@@ -24,29 +24,17 @@ type Context struct {
 
 func solve(pos, n int, ctx *Context) {
 	if pos == n*n {
-		var copyBoard Board
-		//copy(copyBoard, ctx.board)
-		ctx.solvedBoards = append(ctx.solvedBoards, copyBoard)
-
-		var ok bool = true
+		copyBoard := make([][]bool, n)
 		for i := 0; i < n; i++ {
-			if !ctx.rows[i] || !ctx.cols[i] {
-				ok = false
-				break
+			copyBoard[i] = make([]bool, n)
+		}
+
+		for row := 0; row < n; row++ {
+			for col := 0; col < n; col++ {
+				copyBoard[row][col] = ctx.board[row][col]
 			}
 		}
-
-		for i := 0; i < 2*n-1; i++ {
-			if !ctx.skewsForward[i] || !ctx.skewsBack[i] {
-				ok = false
-				break
-			}
-		}
-
-		if ok {
-			fmt.Println(ctx.board)
-		}
-
+		ctx.solvedBoards = append(ctx.solvedBoards, copyBoard)
 		return
 	}
 
@@ -83,7 +71,7 @@ func solveNQueens(n int) [][]string {
 
 	solve(0, n, &ctx)
 
-	fmt.Print(ctx.solvedBoards)
+	fmt.Print(len(ctx.solvedBoards))
 
 	return [][]string{}
 }
