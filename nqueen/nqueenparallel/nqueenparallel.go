@@ -1,9 +1,8 @@
-package main
+package nqueenparallel
 
 import (
 	"github.com/yqsy/algorithm/nqueen/nqueen"
 	"log"
-	"fmt"
 )
 
 type Task struct {
@@ -109,10 +108,3 @@ func (cm *ComputingModule) GetResult(n int) {
 	}
 }
 
-func main() {
-	cm := NewComputingModule()
-	cm.Prepare(16)
-	allSolvedBoards := cm.Solve(16)
-
-	fmt.Print(len(allSolvedBoards))
-}
