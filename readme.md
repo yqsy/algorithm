@@ -11,4 +11,4 @@
 
 * [soduku](soduku)
 * [repeat_number(数组重复数字)](repeat_number)
-* [eightqueen(8皇后)](eightqueen)
+* [nqueen](nqueen)
