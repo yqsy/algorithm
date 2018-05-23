@@ -10,5 +10,6 @@
 一些有趣的算法积累
 
 * [soduku](soduku)
-* [repeat_number(数组重复数字)](repeat_number)
 * [nqueen](nqueen)
+* [repeat_number(数组重复数字)](repeat_number)
+* [searcharray(二维数组查找数字)](searcharray)
