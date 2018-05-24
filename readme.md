@@ -14,3 +14,4 @@
 * [repeat_number(数组重复数字)](repeat_number)
 * [searcharray(二维数组查找数字)](searcharray)
 * [replacestr(字符串替换)](replacestr)
+* [list(链表)](list)
