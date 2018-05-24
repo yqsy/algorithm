@@ -15,3 +15,4 @@
 * [searcharray(二维数组查找数字)](searcharray)
 * [replacestr(字符串替换)](replacestr)
 * [list(链表)](list)
+* [binarytree(二叉树)](binarytree)
