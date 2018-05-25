@@ -16,3 +16,4 @@
 * [replacestr(字符串替换)](replacestr)
 * [list(链表)](list)
 * [binarytree(二叉树)](binarytree)
+* [stackqueue(栈to队列,队列to栈)](stackqueue)
