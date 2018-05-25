@@ -77,4 +77,7 @@ func TestListSimple(t *testing.T) {
 	if !reflect.DeepEqual(lst.reverseSnap(), []int{7, 1, 6, 2, 5, 2, 3, 2, 0, 3, 1}) {
 		t.Fatal("not equal")
 	}
+
+
+
 }
