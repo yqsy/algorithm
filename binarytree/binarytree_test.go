@@ -62,3 +62,19 @@ func TestCreateTreePreInfixPost(t *testing.T) {
 
 	fmt.Println(tree.AllLayer())
 }
+
+func TestNextNode(t *testing.T) {
+
+	binaryTree := Deserialize([]int{1, 2, 3, 4, 5, 6, 7, 8, 9})
+
+	node := binaryTree.FindNode(5)
+
+	fmt.Println(node.data)
+
+	nextNode := binaryTree.NextInfixNode(node)
+
+	if nextNode != nil {
+		fmt.Println(nextNode.data)
+	}
+
+}

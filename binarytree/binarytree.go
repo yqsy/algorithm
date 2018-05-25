@@ -15,6 +15,7 @@ func NewNode(data int) *Node {
 	return &Node{data: data}
 }
 
+// 前序
 func (node *Node) PreOrder(out *[]int) {
 	*out = append(*out, node.data)
 	if node.left != nil {
@@ -26,6 +27,7 @@ func (node *Node) PreOrder(out *[]int) {
 	}
 }
 
+// 中序
 func (node *Node) InfixOrder(out *[]int) {
 	if node.left != nil {
 		node.left.InfixOrder(out)
@@ -38,6 +40,7 @@ func (node *Node) InfixOrder(out *[]int) {
 	}
 }
 
+// 后序
 func (node *Node) PostOrder(out *[]int) {
 	if node.left != nil {
 		node.left.PostOrder(out)
@@ -50,6 +53,7 @@ func (node *Node) PostOrder(out *[]int) {
 	*out = append(*out, node.data)
 }
 
+// 数组中查找index
 func GetIndexInArray(array []int, n int) int {
 	for idx, val := range array {
 		if val == n {
@@ -59,6 +63,7 @@ func GetIndexInArray(array []int, n int) int {
 	return 0
 }
 
+// 前序 + 中序
 func CreateNodeFromPreInfix(pre []int, infix []int) *Node {
 	if len(pre) == 0 {
 		return nil
@@ -77,6 +82,7 @@ func CreateNodeFromPreInfix(pre []int, infix []int) *Node {
 	return node
 }
 
+// 中序 + 后序
 func CreateNodeFromInfixPost(infix []int, post []int) *Node {
 	if len(post) == 0 {
 		return nil
@@ -301,6 +307,83 @@ func (binaryTree *BinaryTree) Serialize() []int {
 
 	}
 	return serialized
+}
+
+// 寻找node (前序)
+func (binaryTree *BinaryTree) FindNode(data int) *Node {
+	if binaryTree.head == nil {
+		return nil
+	}
+
+	var out *Node
+	s := stack.New()
+	s.Push(binaryTree.head)
+
+	for {
+		if s.Len() < 1 {
+			break
+		}
+
+		node := s.Pop().(*Node)
+
+		if node.data == data {
+			out = node
+		}
+
+		if node.right != nil {
+			s.Push(node.right)
+		}
+
+		if node.left != nil {
+			s.Push(node.left)
+		}
+	}
+
+	return out
+}
+
+// 中序遍历下一个node
+func (binaryTree *BinaryTree) NextInfixNode(curNode *Node) *Node {
+	if binaryTree.head == nil {
+		return nil
+	}
+
+	var out *Node
+	s := stack.New()
+
+	getFlag := false
+
+	node := binaryTree.head
+	for {
+		for {
+			if node == nil {
+				break
+			}
+
+			s.Push(node)
+			node = node.left
+		}
+
+		if s.Len() < 1 {
+			break
+		}
+
+		popNode := s.Pop().(*Node)
+
+		if getFlag {
+			out = popNode
+			break
+		}
+
+		if curNode == popNode {
+			getFlag = true
+		}
+		if popNode.right != nil {
+			node = popNode.right
+		}
+	}
+
+	return out
 }
 
 // 反序列化树
