@@ -50,6 +50,51 @@ func (node *Node) PostOrder(out *[]int) {
 	*out = append(*out, node.data)
 }
 
+func GetIndexInArray(array []int, n int) int {
+	for idx, val := range array {
+		if val == n {
+			return idx
+		}
+	}
+	return 0
+}
+
+func CreateNodeFromPreInfix(pre []int, infix []int) *Node {
+	if len(pre) == 0 {
+		return nil
+	}
+
+	if len(pre) == 1 {
+		return NewNode(pre[0])
+	}
+
+	val := pre[0]
+	idx := GetIndexInArray(infix, val)
+
+	node := NewNode(val)
+	node.left = CreateNodeFromPreInfix(pre[1:idx+1], infix[0:idx])
+	node.right = CreateNodeFromPreInfix(pre[idx+1:], infix[idx+1:])
+	return node
+}
+
+func CreateNodeFromInfixPost(infix []int, post []int) *Node {
+	if len(post) == 0 {
+		return nil
+	}
+
+	if len(post) == 1 {
+		return NewNode(post[0])
+	}
+
+	val := post[len(post)-1]
+	idx := GetIndexInArray(infix, val)
+
+	node := NewNode(val)
+	node.left = CreateNodeFromInfixPost(infix[0:idx], post[0:idx])
+	node.right = CreateNodeFromInfixPost(infix[idx+1:], post[idx:len(post)-1])
+	return node
+}
+
 type BinaryTree struct {
 	head *Node
 }
@@ -295,5 +340,19 @@ func Deserialize(nodes []int) *BinaryTree {
 		node.left = NewNode(nodes[len(nodes)-1])
 	}
 
+	return binaryTree
+}
+
+// 前序 + 中序 生成二叉树
+func buildTreeFromPreInfix(pre []int, infix []int) *BinaryTree {
+	binaryTree := &BinaryTree{}
+	binaryTree.head = CreateNodeFromPreInfix(pre, infix)
+	return binaryTree
+}
+
+// 中序 + 后序 生成二叉树
+func buildTreeFromInfixPost(infix []int, post []int) *BinaryTree {
+	binaryTree := &BinaryTree{}
+	binaryTree.head = CreateNodeFromInfixPost(infix, post)
 	return binaryTree
 }
