@@ -51,21 +51,20 @@ func TestInsertSort(t *testing.T) {
 }
 
 func TestQuickSortRecursion(t *testing.T) {
-
 	array1 := createArray1()
-	quickSortRecursion(array1, 0, len(array1))
+	quickSortRecursion(array1, 0, len(array1)-1)
 	if !checkArray1(array1) {
 		t.Fatalf("err %v", array1)
 	}
 
 	array2 := createArray2()
-	quickSortRecursion(array2, 0, len(array2))
+	quickSortRecursion(array2, 0, len(array2)-1)
 	if !checkArray2(array2) {
 		t.Fatal("err")
 	}
 
 	array3 := createArray3()
-	quickSortRecursion(array3, 0, len(array3))
+	quickSortRecursion(array3, 0, len(array3)-1)
 	if !checkArray3(array3) {
 		t.Fatal("err")
 	}
@@ -74,44 +73,43 @@ func TestQuickSortRecursion(t *testing.T) {
 func TestQuickSort(t *testing.T) {
 
 	array1 := createArray1()
-	quickSort(array1, 0, len(array1))
+	quickSort(array1, 0, len(array1)-1)
 	if !checkArray1(array1) {
 		t.Fatalf("err %v", array1)
 	}
 
 	array2 := createArray2()
-	quickSort(array2, 0, len(array2))
+	quickSort(array2, 0, len(array2)-1)
 	if !checkArray2(array2) {
 		t.Fatal("err")
 	}
 
 	array3 := createArray3()
-	quickSort(array3, 0, len(array3))
+	quickSort(array3, 0, len(array3)-1)
 	if !checkArray3(array3) {
 		t.Fatal("err")
 	}
 }
 
 func TestMergeSort(t *testing.T) {
-
 	array1 := createArray1()
 	tmp := make([]int, len(array1))
-	mergeSortRecursion(array1, 0, len(array1), tmp)
+	mergeSortRecursion(array1, 0, len(array1)-1, tmp)
 	if !checkArray1(array1) {
 		t.Fatalf("err %v", array1)
 	}
 
-	//array2 := createArray2()
-	//tmp = make([]int, len(array2))
-	//mergeSortRecursion(array2, 0, len(array2), tmp)
-	//if !checkArray2(array2) {
-	//	t.Fatal("err")
-	//}
-	//
-	//array3 := createArray3()
-	//tmp = make([]int, len(array3))
-	//mergeSortRecursion(array3, 0, len(array3), tmp)
-	//if !checkArray3(array3) {
-	//	t.Fatal("err")
-	//}
+	array2 := createArray2()
+	tmp = make([]int, len(array2))
+	mergeSortRecursion(array2, 0, len(array2)-1, tmp)
+	if !checkArray2(array2) {
+		t.Fatal("err")
+	}
+
+	array3 := createArray3()
+	tmp = make([]int, len(array3))
+	mergeSortRecursion(array3, 0, len(array3)-1, tmp)
+	if !checkArray3(array3) {
+		t.Fatal("err")
+	}
 }

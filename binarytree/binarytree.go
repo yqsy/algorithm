@@ -115,10 +115,7 @@ func (binaryTree *BinaryTree) PreOrderStack() []int {
 	s := stack.New()
 	s.Push(binaryTree.head)
 
-	for {
-		if s.Len() < 1 {
-			break
-		}
+	for ; s.Len() > 0; {
 
 		node := s.Pop().(*Node)
 		out = append(out, node.data)
@@ -146,11 +143,7 @@ func (binaryTree *BinaryTree) InfixOrderStack() []int {
 
 	node := binaryTree.head
 	for {
-		for {
-			if node == nil {
-				break
-			}
-
+		for ; node != nil; {
 			s.Push(node)
 			node = node.left
 		}
@@ -179,10 +172,7 @@ func (binaryTree *BinaryTree) PostOrderStack() []int {
 	s := stack.New()
 	s.Push(binaryTree.head)
 
-	for {
-		if s.Len() < 1 {
-			break
-		}
+	for ; s.Len() > 0; {
 
 		node := s.Pop().(*Node)
 		out = append(out, node.data)
@@ -319,10 +309,7 @@ func (binaryTree *BinaryTree) FindNode(data int) *Node {
 	s := stack.New()
 	s.Push(binaryTree.head)
 
-	for {
-		if s.Len() < 1 {
-			break
-		}
+	for ; s.Len() > 0; {
 
 		node := s.Pop().(*Node)
 
@@ -355,10 +342,7 @@ func (binaryTree *BinaryTree) NextInfixNode(curNode *Node) *Node {
 
 	node := binaryTree.head
 	for {
-		for {
-			if node == nil {
-				break
-			}
+		for ; node != nil; {
 
 			s.Push(node)
 			node = node.left

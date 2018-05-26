@@ -1,8 +1,6 @@
 package sort
 
-import (
-	"github.com/golang-collections/collections/queue"
-)
+import "github.com/golang-collections/collections/queue"
 
 func insertSort(array []int) {
 	if len(array) < 2 {
@@ -18,118 +16,99 @@ func insertSort(array []int) {
 	}
 }
 
-func partition(array []int, begin, end int) int {
-	cur := array[begin]
-
-	leftIdx := begin + 1
-
-	for i := begin + 1; i < end; i++ {
+func partition(array []int, first, last int) int {
+	cur := array[first]
+	p := first + 1
+	for i := first + 1; i <= last; i++ {
 		if array[i] < cur {
-			array[leftIdx], array[i] = array[i], array[leftIdx]
-			leftIdx += 1
+			array[p], array[i] = array[i], array[p]
+			p += 1
 		}
 	}
-	array[leftIdx-1], array[begin] = array[begin], array[leftIdx-1]
-
-	return leftIdx - 1
+	array[p-1], array[first] = array[first], array[p-1]
+	return p - 1
 }
 
-func quickSort(array []int, begin, end int) {
-	q := queue.New()
+func quickSort(array []int, first, last int) {
+	if first < last {
+		q := queue.New()
 
-	if begin < end {
+		mid := partition(array, first, last)
 
-		mid := partition(array, begin, end)
-
-		if begin < mid {
-			q.Enqueue([]int{begin, mid})
+		if first < mid-1 {
+			q.Enqueue([]int{first, mid - 1})
 		}
 
-		if mid+1 < end {
-			q.Enqueue([]int{mid + 1, end})
+		if mid+1 < last {
+			q.Enqueue([]int{mid + 1, last})
 		}
 
-		for {
-			if q.Len() < 1 {
-				break
-			}
+		for ;q.Len()>0;{
 
 			ele := q.Dequeue().([]int)
-			begin, end = ele[0], ele[1]
-			mid = partition(array, begin, end)
+			l, r := ele[0], ele[1]
 
-			if begin < mid {
-				q.Enqueue([]int{begin, mid})
+			mid := partition(array, l, r)
+
+			if l < mid-1 {
+				q.Enqueue([]int{l, mid - 1})
 			}
 
-			if mid+1 < end {
-				q.Enqueue([]int{mid + 1, end})
+			if mid+1 < r {
+				q.Enqueue([]int{mid + 1, r})
 			}
 		}
 	}
 }
 
-func quickSortRecursion(array []int, begin, end int) {
-	if begin < end {
-		mid := partition(array, begin, end)
-		quickSortRecursion(array, begin, mid)
-		quickSortRecursion(array, mid+1, end)
+func quickSortRecursion(array []int, first, last int) {
+	if first < last {
+		mid := partition(array, first, last)
+		quickSortRecursion(array, first, mid-1)
+		quickSortRecursion(array, mid+1, last)
 	}
 }
 
-func merge(array []int, begin, mid, end int, tmp []int) {
-	j := begin
+// mid 是前半个空间的最后一个元素
+func merge(array []int, first, mid, last int, tmp []int) {
+	j := first
 	k := mid + 1
 
-	// tmp
 	n := 0
-
-	for {
-		if !(j <= mid && k < end) {
-			break
-		}
-
-		if array[j] > array[k] {
-			tmp[n] = array[k]
-			k++
-			n++
-		} else {
+	for ; j <= mid && k <= last; {
+		if array[j] < array[k] {
 			tmp[n] = array[j]
-			j++
 			n++
-		}
-	}
-
-	for {
-		if j <= mid {
-			tmp[n] = array[j]
 			j++
-			n++
 		} else {
-			break
-		}
-	}
-
-	for {
-		if k < end {
 			tmp[n] = array[k]
-			k++
 			n++
-		} else {
-			break
+			k++
 		}
 	}
 
-	for i := begin; i < end; i++ {
-		array[i] = tmp[i]
+	for ; j <= mid; {
+		tmp[n] = array[j]
+		n++
+		j++
+	}
+
+	for ; k <= last; {
+		tmp[n] = array[k]
+		n++
+		k++
+	}
+
+	for i := 0; i <= (last - first); i++ {
+		array[first+i] = tmp[i]
 	}
 }
 
-func mergeSortRecursion(array []int, begin, end int, tmp []int) {
-	if begin < end {
-		mid := (begin + end) / 2
-		mergeSortRecursion(array, begin, mid+1, tmp)
-		mergeSortRecursion(array, mid+1, end, tmp)
-		merge(array, begin, mid, end, tmp)
+func mergeSortRecursion(array []int, first, last int, tmp []int) {
+	if first < last {
+		mid := (first + last) / 2
+		mergeSortRecursion(array, first, mid, tmp)
+		mergeSortRecursion(array, mid+1, last, tmp)
+		merge(array, first, mid, last, tmp)
 	}
 }

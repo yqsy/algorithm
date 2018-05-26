@@ -25,10 +25,7 @@ func (queue *Queue) Enqueue(ele interface{}) {
 func (queue *Queue) Dequeue() interface{} {
 	if queue.stack2.Len() < 1 {
 
-		for {
-			if queue.stack1.Len() < 1 {
-				break
-			}
+		for ;queue.stack1.Len()>0;{
 			queue.stack2.Push(queue.stack1.Pop())
 		}
 	}
