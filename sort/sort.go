@@ -107,20 +107,18 @@ func merge(array []int, first, mid, last int, tmp []int) {
 	}
 }
 
+func min(a, b int) int {
+	if a < b {
+		return a
+	} else {
+		return b
+	}
+}
+
 func mergeSort(array []int, tmp []int) {
 	for n := 1; n < len(array); n *= 2 {
 		for i := 0; i+n < len(array); i += 2 * n {
-			first := i
-			var last int
-			var mid int
-			if i+2*n < len(array) {
-				last = i + 2*n - 1
-				mid = (first + last) / 2
-			} else {
-				last = len(array) - 1
-				mid = first + n - 1
-			}
-			merge(array, first, mid, last, tmp)
+			merge(array, i, i+n-1, min(i+2*n-1, len(array)-1), tmp)
 		}
 	}
 }
@@ -132,4 +130,8 @@ func mergeSortRecursion(array []int, first, last int, tmp []int) {
 		mergeSortRecursion(array, mid+1, last, tmp)
 		merge(array, first, mid, last, tmp)
 	}
+}
+
+func heapSort(array []int) {
+
 }
