@@ -91,7 +91,7 @@ func TestQuickSort(t *testing.T) {
 	}
 }
 
-func TestMergeSort(t *testing.T) {
+func TestMergeSortRecursion(t *testing.T) {
 	array1 := createArray1()
 	tmp := make([]int, len(array1))
 	mergeSortRecursion(array1, 0, len(array1)-1, tmp)
@@ -109,6 +109,29 @@ func TestMergeSort(t *testing.T) {
 	array3 := createArray3()
 	tmp = make([]int, len(array3))
 	mergeSortRecursion(array3, 0, len(array3)-1, tmp)
+	if !checkArray3(array3) {
+		t.Fatal("err")
+	}
+}
+
+func TestMergeSort(t *testing.T) {
+	array1 := createArray1()
+	tmp := make([]int, len(array1))
+	mergeSort(array1, tmp)
+	if !checkArray1(array1) {
+		t.Fatalf("err %v", array1)
+	}
+
+	array2 := createArray2()
+	tmp = make([]int, len(array2))
+	mergeSort(array2, tmp)
+	if !checkArray2(array2) {
+		t.Fatal("err")
+	}
+
+	array3 := createArray3()
+	tmp = make([]int, len(array3))
+	mergeSort(array3, tmp)
 	if !checkArray3(array3) {
 		t.Fatal("err")
 	}

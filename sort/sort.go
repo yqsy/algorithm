@@ -1,6 +1,8 @@
 package sort
 
-import "github.com/golang-collections/collections/queue"
+import (
+	"github.com/golang-collections/collections/stack"
+)
 
 func insertSort(array []int) {
 	if len(array) < 2 {
@@ -31,32 +33,33 @@ func partition(array []int, first, last int) int {
 
 func quickSort(array []int, first, last int) {
 	if first < last {
-		q := queue.New()
+		s := stack.New()
 
 		mid := partition(array, first, last)
 
-		if first < mid-1 {
-			q.Enqueue([]int{first, mid - 1})
-		}
-
 		if mid+1 < last {
-			q.Enqueue([]int{mid + 1, last})
+			s.Push([]int{mid + 1, last})
 		}
 
-		for ;q.Len()>0;{
+		if first < mid-1 {
+			s.Push([]int{first, mid - 1})
+		}
 
-			ele := q.Dequeue().([]int)
+		for ; s.Len() > 0; {
+
+			ele := s.Pop().([]int)
 			l, r := ele[0], ele[1]
 
 			mid := partition(array, l, r)
 
-			if l < mid-1 {
-				q.Enqueue([]int{l, mid - 1})
+			if mid+1 < r {
+				s.Push([]int{mid + 1, r})
 			}
 
-			if mid+1 < r {
-				q.Enqueue([]int{mid + 1, r})
+			if l < mid-1 {
+				s.Push([]int{l, mid - 1})
 			}
+
 		}
 	}
 }
@@ -101,6 +104,24 @@ func merge(array []int, first, mid, last int, tmp []int) {
 
 	for i := 0; i <= (last - first); i++ {
 		array[first+i] = tmp[i]
+	}
+}
+
+func mergeSort(array []int, tmp []int) {
+	for n := 1; n < len(array); n *= 2 {
+		for i := 0; i+n < len(array); i += 2 * n {
+			first := i
+			var last int
+			var mid int
+			if i+2*n < len(array) {
+				last = i + 2*n - 1
+				mid = (first + last) / 2
+			} else {
+				last = len(array) - 1
+				mid = first + n - 1
+			}
+			merge(array, first, mid, last, tmp)
+		}
 	}
 }
 
