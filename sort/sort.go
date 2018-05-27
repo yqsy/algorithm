@@ -132,6 +132,37 @@ func mergeSortRecursion(array []int, first, last int, tmp []int) {
 	}
 }
 
-func heapSort(array []int) {
+// * 使用index[0]
+// * 位置k的结点的父节点位置为 `(k-1)/2`
+// * 两个子结点的位置分别为 `2*k+1` 和 `2*k+2`
 
+func sink(array []int, k, last int) {
+	for ; 2*k+1 <= last; {
+		j := 2*k + 1
+		if 2*k+1 < last && array[2*k+1] < array[2*k+2] {
+			j++
+		}
+
+		if !(array[k] < array[j]) {
+			break
+		}
+
+		array[j], array[k] = array[k], array[j]
+		k = j
+	}
+}
+
+func heapSort(array []int) {
+	// 构建堆
+	last := len(array) - 1
+	for k := (last - 1) / 2; k >= 0; k-- {
+		sink(array, k, len(array)-1)
+	}
+
+	// 最大数字往末尾放
+	for j := last; j > 0; {
+		array[0], array[j] = array[j], array[0]
+		j--
+		sink(array, 0, j)
+	}
 }

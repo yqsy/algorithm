@@ -136,3 +136,23 @@ func TestMergeSort(t *testing.T) {
 		t.Fatal("err")
 	}
 }
+
+func TestHeaport(t *testing.T) {
+	array1 := createArray1()
+	heapSort(array1)
+	if !checkArray1(array1) {
+		t.Fatalf("err %v", array1)
+	}
+
+	array2 := createArray2()
+	heapSort(array2)
+	if !checkArray2(array2) {
+		t.Fatal("err")
+	}
+
+	array3 := createArray3()
+	heapSort(array3)
+	if !checkArray3(array3) {
+		t.Fatal("err")
+	}
+}
