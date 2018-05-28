@@ -137,7 +137,7 @@ func TestMergeSort(t *testing.T) {
 	}
 }
 
-func TestHeaport(t *testing.T) {
+func TestHeapSort(t *testing.T) {
 	array1 := createArray1()
 	heapSort(array1)
 	if !checkArray1(array1) {
