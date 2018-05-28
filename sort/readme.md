@@ -4,6 +4,7 @@
 - [2. 实现](#2-实现)
 - [3. 标准库sort的分析](#3-标准库sort的分析)
 - [4. benchmark](#4-benchmark)
+- [5. js指令](#5-js指令)
 
 <!-- /TOC -->
 
@@ -36,3 +37,13 @@
 <a id="markdown-4-benchmark" name="4-benchmark"></a>
 # 4. benchmark
 
+
+
+<a id="markdown-5-js指令" name="5-js指令"></a>
+# 5. js指令
+
+```bash
+npm init -y
+npm install mocha chai lodash --save
+npm test
+```
