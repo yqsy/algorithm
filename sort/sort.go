@@ -5,15 +5,9 @@ import (
 )
 
 func insertSort(array []int) {
-	if len(array) < 2 {
-		return
-	}
-
-	for i := 1; i < len(array); i ++ {
-		for j := i; j >= 1; j-- {
-			if array[j] < array[j-1] {
-				array[j], array[j-1] = array[j-1], array[j]
-			}
+	for i := 1; i < len(array); i++ {
+		for j := i; j >= 1 && array[j] < array[j-1]; j-- {
+			array[j], array[j-1] = array[j-1], array[j]
 		}
 	}
 }
@@ -167,6 +161,14 @@ func heapSort(array []int) {
 	}
 }
 
-func shellSort() {
-
+func shellSort(array []int) {
+	for gap := len(array) / 2; gap > 0; gap /= 2 {
+		// gap是跳跃的距离
+		// 从第一个能跳gap的点,遍历到终点的每个点都跳跃
+		for i := gap; i < len(array); i++ {
+			for j := i; j >= gap && array[j] < array[j-gap]; j -= gap {
+				array[j], array[j-gap] = array[j-gap], array[j]
+			}
+		}
+	}
 }
