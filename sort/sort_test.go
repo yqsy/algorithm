@@ -176,3 +176,43 @@ func TestShellSort(t *testing.T) {
 		t.Fatal("err")
 	}
 }
+
+func TestBubbleSort(t *testing.T) {
+	array1 := createArray1()
+	bubbleSort(array1)
+	if !checkArray1(array1) {
+		t.Fatalf("err %v", array1)
+	}
+
+	array2 := createArray2()
+	bubbleSort(array2)
+	if !checkArray2(array2) {
+		t.Fatal("err")
+	}
+
+	array3 := createArray3()
+	bubbleSort(array3)
+	if !checkArray3(array3) {
+		t.Fatal("err")
+	}
+}
+
+func TestSelectionSort(t *testing.T) {
+	array1 := createArray1()
+	selectionSort(array1)
+	if !checkArray1(array1) {
+		t.Fatalf("err %v", array1)
+	}
+
+	array2 := createArray2()
+	selectionSort(array2)
+	if !checkArray2(array2) {
+		t.Fatal("err")
+	}
+
+	array3 := createArray3()
+	selectionSort(array3)
+	if !checkArray3(array3) {
+		t.Fatal("err")
+	}
+}

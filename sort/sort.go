@@ -172,3 +172,25 @@ func shellSort(array []int) {
 		}
 	}
 }
+
+func bubbleSort(array []int) {
+	for i := 0; i < len(array)-1; i++ {
+		for j := 0; j < len(array)-i-1; j++ {
+			if array[j] > array[j+1] {
+				array[j], array[j+1] = array[j+1], array[j]
+			}
+		}
+	}
+}
+
+func selectionSort(array []int) {
+	for i := 0; i < len(array); i++ {
+		minIdx := i
+		for j := i; j < len(array); j++ {
+			if array[j] < array[minIdx] {
+				minIdx = j
+			}
+		}
+		array[i], array[minIdx] = array[minIdx], array[i]
+	}
+}
