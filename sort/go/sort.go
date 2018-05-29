@@ -4,7 +4,7 @@ import (
 	"github.com/golang-collections/collections/stack"
 )
 
-func insertSort(array []int) {
+func InsertSort(array []int) {
 	for i := 1; i < len(array); i++ {
 		for j := i; j >= 1 && array[j] < array[j-1]; j-- {
 			array[j], array[j-1] = array[j-1], array[j]
@@ -25,7 +25,7 @@ func partition(array []int, first, last int) int {
 	return p - 1
 }
 
-func quickSort(array []int, first, last int) {
+func QuickSort(array []int, first, last int) {
 	if first < last {
 		s := stack.New()
 
@@ -58,11 +58,11 @@ func quickSort(array []int, first, last int) {
 	}
 }
 
-func quickSortRecursion(array []int, first, last int) {
+func QuickSortRecursion(array []int, first, last int) {
 	if first < last {
 		mid := partition(array, first, last)
-		quickSortRecursion(array, first, mid-1)
-		quickSortRecursion(array, mid+1, last)
+		QuickSortRecursion(array, first, mid-1)
+		QuickSortRecursion(array, mid+1, last)
 	}
 }
 
@@ -109,7 +109,7 @@ func min(a, b int) int {
 	}
 }
 
-func mergeSort(array []int, tmp []int) {
+func MergeSort(array []int, tmp []int) {
 	for n := 1; n < len(array); n *= 2 {
 		for i := 0; i+n < len(array); i += 2 * n {
 			merge(array, i, i+n-1, min(i+2*n-1, len(array)-1), tmp)
@@ -117,11 +117,11 @@ func mergeSort(array []int, tmp []int) {
 	}
 }
 
-func mergeSortRecursion(array []int, first, last int, tmp []int) {
+func MergeSortRecursion(array []int, first, last int, tmp []int) {
 	if first < last {
 		mid := (first + last) / 2
-		mergeSortRecursion(array, first, mid, tmp)
-		mergeSortRecursion(array, mid+1, last, tmp)
+		MergeSortRecursion(array, first, mid, tmp)
+		MergeSortRecursion(array, mid+1, last, tmp)
 		merge(array, first, mid, last, tmp)
 	}
 }
@@ -146,7 +146,7 @@ func sink(array []int, k, last int) {
 	}
 }
 
-func heapSort(array []int) {
+func HeapSort(array []int) {
 	// 构建堆
 	last := len(array) - 1
 	for k := (last - 1) / 2; k >= 0; k-- {
@@ -161,7 +161,7 @@ func heapSort(array []int) {
 	}
 }
 
-func shellSort(array []int) {
+func ShellSort(array []int) {
 	for gap := len(array) / 2; gap > 0; gap /= 2 {
 		// gap是跳跃的距离
 		// 从第一个能跳gap的点,遍历到终点的每个点都跳跃
@@ -173,7 +173,7 @@ func shellSort(array []int) {
 	}
 }
 
-func bubbleSort(array []int) {
+func BubbleSort(array []int) {
 	for i := 0; i < len(array)-1; i++ {
 		for j := 0; j < len(array)-i-1; j++ {
 			if array[j] > array[j+1] {
@@ -183,7 +183,7 @@ func bubbleSort(array []int) {
 	}
 }
 
-func selectionSort(array []int) {
+func SelectionSort(array []int) {
 	for i := 0; i < len(array); i++ {
 		minIdx := i
 		for j := i; j < len(array); j++ {

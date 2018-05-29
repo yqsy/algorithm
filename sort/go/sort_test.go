@@ -32,19 +32,19 @@ func checkArray3(array []int) bool {
 func TestInsertSort(t *testing.T) {
 
 	array1 := createArray1()
-	insertSort(array1)
+	InsertSort(array1)
 	if !checkArray1(array1) {
 		t.Fatal("err")
 	}
 
 	array2 := createArray2()
-	insertSort(array2)
+	InsertSort(array2)
 	if !checkArray2(array2) {
 		t.Fatal("err")
 	}
 
 	array3 := createArray3()
-	insertSort(array3)
+	InsertSort(array3)
 	if !checkArray3(array3) {
 		t.Fatal("err")
 	}
@@ -52,19 +52,19 @@ func TestInsertSort(t *testing.T) {
 
 func TestQuickSortRecursion(t *testing.T) {
 	array1 := createArray1()
-	quickSortRecursion(array1, 0, len(array1)-1)
+	QuickSortRecursion(array1, 0, len(array1)-1)
 	if !checkArray1(array1) {
 		t.Fatalf("err %v", array1)
 	}
 
 	array2 := createArray2()
-	quickSortRecursion(array2, 0, len(array2)-1)
+	QuickSortRecursion(array2, 0, len(array2)-1)
 	if !checkArray2(array2) {
 		t.Fatal("err")
 	}
 
 	array3 := createArray3()
-	quickSortRecursion(array3, 0, len(array3)-1)
+	QuickSortRecursion(array3, 0, len(array3)-1)
 	if !checkArray3(array3) {
 		t.Fatal("err")
 	}
@@ -73,19 +73,19 @@ func TestQuickSortRecursion(t *testing.T) {
 func TestQuickSort(t *testing.T) {
 
 	array1 := createArray1()
-	quickSort(array1, 0, len(array1)-1)
+	QuickSort(array1, 0, len(array1)-1)
 	if !checkArray1(array1) {
 		t.Fatalf("err %v", array1)
 	}
 
 	array2 := createArray2()
-	quickSort(array2, 0, len(array2)-1)
+	QuickSort(array2, 0, len(array2)-1)
 	if !checkArray2(array2) {
 		t.Fatal("err")
 	}
 
 	array3 := createArray3()
-	quickSort(array3, 0, len(array3)-1)
+	QuickSort(array3, 0, len(array3)-1)
 	if !checkArray3(array3) {
 		t.Fatal("err")
 	}
@@ -94,21 +94,21 @@ func TestQuickSort(t *testing.T) {
 func TestMergeSortRecursion(t *testing.T) {
 	array1 := createArray1()
 	tmp := make([]int, len(array1))
-	mergeSortRecursion(array1, 0, len(array1)-1, tmp)
+	MergeSortRecursion(array1, 0, len(array1)-1, tmp)
 	if !checkArray1(array1) {
 		t.Fatalf("err %v", array1)
 	}
 
 	array2 := createArray2()
 	tmp = make([]int, len(array2))
-	mergeSortRecursion(array2, 0, len(array2)-1, tmp)
+	MergeSortRecursion(array2, 0, len(array2)-1, tmp)
 	if !checkArray2(array2) {
 		t.Fatal("err")
 	}
 
 	array3 := createArray3()
 	tmp = make([]int, len(array3))
-	mergeSortRecursion(array3, 0, len(array3)-1, tmp)
+	MergeSortRecursion(array3, 0, len(array3)-1, tmp)
 	if !checkArray3(array3) {
 		t.Fatal("err")
 	}
@@ -117,21 +117,21 @@ func TestMergeSortRecursion(t *testing.T) {
 func TestMergeSort(t *testing.T) {
 	array1 := createArray1()
 	tmp := make([]int, len(array1))
-	mergeSort(array1, tmp)
+	MergeSort(array1, tmp)
 	if !checkArray1(array1) {
 		t.Fatalf("err %v", array1)
 	}
 
 	array2 := createArray2()
 	tmp = make([]int, len(array2))
-	mergeSort(array2, tmp)
+	MergeSort(array2, tmp)
 	if !checkArray2(array2) {
 		t.Fatal("err")
 	}
 
 	array3 := createArray3()
 	tmp = make([]int, len(array3))
-	mergeSort(array3, tmp)
+	MergeSort(array3, tmp)
 	if !checkArray3(array3) {
 		t.Fatal("err")
 	}
@@ -139,19 +139,19 @@ func TestMergeSort(t *testing.T) {
 
 func TestHeapSort(t *testing.T) {
 	array1 := createArray1()
-	heapSort(array1)
+	HeapSort(array1)
 	if !checkArray1(array1) {
 		t.Fatalf("err %v", array1)
 	}
 
 	array2 := createArray2()
-	heapSort(array2)
+	HeapSort(array2)
 	if !checkArray2(array2) {
 		t.Fatal("err")
 	}
 
 	array3 := createArray3()
-	heapSort(array3)
+	HeapSort(array3)
 	if !checkArray3(array3) {
 		t.Fatal("err")
 	}
@@ -159,19 +159,19 @@ func TestHeapSort(t *testing.T) {
 
 func TestShellSort(t *testing.T) {
 	array1 := createArray1()
-	shellSort(array1)
+	ShellSort(array1)
 	if !checkArray1(array1) {
 		t.Fatalf("err %v", array1)
 	}
 
 	array2 := createArray2()
-	shellSort(array2)
+	ShellSort(array2)
 	if !checkArray2(array2) {
 		t.Fatal("err")
 	}
 
 	array3 := createArray3()
-	shellSort(array3)
+	ShellSort(array3)
 	if !checkArray3(array3) {
 		t.Fatal("err")
 	}
@@ -179,19 +179,19 @@ func TestShellSort(t *testing.T) {
 
 func TestBubbleSort(t *testing.T) {
 	array1 := createArray1()
-	bubbleSort(array1)
+	BubbleSort(array1)
 	if !checkArray1(array1) {
 		t.Fatalf("err %v", array1)
 	}
 
 	array2 := createArray2()
-	bubbleSort(array2)
+	BubbleSort(array2)
 	if !checkArray2(array2) {
 		t.Fatal("err")
 	}
 
 	array3 := createArray3()
-	bubbleSort(array3)
+	BubbleSort(array3)
 	if !checkArray3(array3) {
 		t.Fatal("err")
 	}
@@ -199,19 +199,19 @@ func TestBubbleSort(t *testing.T) {
 
 func TestSelectionSort(t *testing.T) {
 	array1 := createArray1()
-	selectionSort(array1)
+	SelectionSort(array1)
 	if !checkArray1(array1) {
 		t.Fatalf("err %v", array1)
 	}
 
 	array2 := createArray2()
-	selectionSort(array2)
+	SelectionSort(array2)
 	if !checkArray2(array2) {
 		t.Fatal("err")
 	}
 
 	array3 := createArray3()
-	selectionSort(array3)
+	SelectionSort(array3)
 	if !checkArray3(array3) {
 		t.Fatal("err")
 	}

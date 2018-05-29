@@ -42,7 +42,19 @@
 <a id="markdown-4-benchmark" name="4-benchmark"></a>
 # 4. benchmark
 
+```bash
+go build main.go
 
+for i in 10 100 1000 5000 10000 30000 50000 100000; do
+    ./main $i
+    sleep 1
+done
+
+```
+
+![](sort.png)
+
+测试下来,`递归快速排序`是最快的的
 
 <a id="markdown-5-js指令" name="5-js指令"></a>
 # 5. js指令
