@@ -55,3 +55,55 @@ func rotate3(nums []int, k int) {
 		nums[i] = tmp[i]
 	}
 }
+
+func findMinSimple(nums []int) int {
+	if len(nums) < 1 {
+		return 0
+	}
+
+	minest := 0
+
+	for i := 0; i < len(nums); i++ {
+		if nums[i] < nums[minest] {
+			minest = i
+		}
+	}
+
+	return nums[minest]
+}
+
+func findMin(nums []int) int {
+	if len(nums) == 0 {
+		return 0
+	}
+	if len(nums) == 1 {
+		return nums[0]
+	}
+
+	// 中分找到最大数字,最大数字下标加一
+	begin, end := 0, len(nums)
+
+	maxIdx := -1
+	for {
+		pivot := (begin + end) / 2
+
+		if begin == pivot {
+			maxIdx = begin
+			break
+		}
+
+		if nums[pivot] < nums[begin ] {
+			end = pivot
+		}
+
+		if nums[pivot] > nums[begin] {
+			begin = pivot
+		}
+	}
+
+	if maxIdx >= len(nums)-1 {
+		return findMinSimple(nums)
+	} else {
+		return nums[maxIdx+1]
+	}
+}
