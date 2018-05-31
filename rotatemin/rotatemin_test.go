@@ -59,7 +59,7 @@ func TestRotate3(t *testing.T) {
 func TestFindMin(t *testing.T) {
 	array := []int{5, 6, 7, 1, 2, 3, 4}
 
-	if findMin(array) != 1 {
+	if findMin2(array) != 1 {
 		t.Fatal("err")
 	}
 }

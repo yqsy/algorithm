@@ -56,54 +56,80 @@ func rotate3(nums []int, k int) {
 	}
 }
 
-func findMinSimple(nums []int) int {
-	if len(nums) < 1 {
+func findMinSimple(a []int) int {
+	if len(a) < 1 {
 		return 0
 	}
 
 	minest := 0
 
-	for i := 0; i < len(nums); i++ {
-		if nums[i] < nums[minest] {
+	for i := 0; i < len(a); i++ {
+		if a[i] < a[minest] {
 			minest = i
 		}
 	}
 
-	return nums[minest]
+	return a[minest]
 }
 
-func findMin(nums []int) int {
-	if len(nums) == 0 {
+// 前面部分找到最大的数字,再加1
+func findMin(a []int) int {
+	if len(a) == 0 {
 		return 0
 	}
-	if len(nums) == 1 {
-		return nums[0]
+	if len(a) == 1 {
+		return a[0]
 	}
 
 	// 中分找到最大数字,最大数字下标加一
-	begin, end := 0, len(nums)
+	begin, end := 0, len(a)
 
 	maxIdx := -1
 	for {
-		pivot := (begin + end) / 2
+		pivot := begin + (end-begin)/2
 
 		if begin == pivot {
 			maxIdx = begin
 			break
 		}
 
-		if nums[pivot] < nums[begin ] {
+		if a[pivot] < a[begin] {
 			end = pivot
 		}
 
-		if nums[pivot] > nums[begin] {
+		if a[pivot] > a[begin] {
 			begin = pivot
 		}
 	}
 
-	if maxIdx >= len(nums)-1 {
-		return findMinSimple(nums)
+	if maxIdx >= len(a)-1 {
+		return findMinSimple(a)
 	} else {
-		return nums[maxIdx+1]
+		return a[maxIdx+1]
 	}
+}
+
+// 直接找后半部分最小数字
+func findMin2(a []int) int {
+	if len(a) == 0 {
+		return 0
+	}
+	if len(a) == 1 {
+		return a[0]
+	}
+
+	first, last := 0, len(a)-1
+	for ; first < last; {
+		mid := first + (last-first)/2
+
+		if a[mid] < a[last] {
+			last = mid
+		} else if a[mid] > a[last] {
+			first = mid + 1
+		} else {
+			last--
+		}
+	}
+
+	return a[first]
 }

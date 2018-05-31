@@ -119,7 +119,7 @@ func MergeSort(array []int, tmp []int) {
 
 func MergeSortRecursion(array []int, first, last int, tmp []int) {
 	if first < last {
-		mid := (first + last) / 2
+		mid := first + (last-first)/2
 		MergeSortRecursion(array, first, mid, tmp)
 		MergeSortRecursion(array, mid+1, last, tmp)
 		merge(array, first, mid, last, tmp)

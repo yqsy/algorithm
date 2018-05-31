@@ -22,3 +22,4 @@
 * [sort(排序)](sort)
 * [heap(堆)](heap)
 * [rotatemin(旋转数组的最小数字)](rotatemin)
+* [binarysearch(二分查找)](binarysearch)
