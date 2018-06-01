@@ -49,7 +49,4 @@ array与object的关键区别是:
 array的成员是没有key的(成员可以是任意值)  
 object的成员是有key的  
 
-存放:  
-* object -> map
-* array -> slice
-
+注意:`key` 值只有在object对象中才有

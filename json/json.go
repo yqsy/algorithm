@@ -10,12 +10,12 @@ type Kind int
 
 const (
 	Null   Kind = 0
-	True   
-	False  
-	String 
-	Number 
-	Array  
-	Object 
+	True
+	False
+	String
+	Number
+	Array
+	Object
 )
 
 type Node struct {
@@ -33,9 +33,6 @@ type Node struct {
 
 	// 对象
 	object *map[string]Node
-
-	// 键值
-	key *string
 }
 
 func (node *Node) GetString() string {
@@ -43,6 +40,22 @@ func (node *Node) GetString() string {
 		return *node.value
 	} else {
 		return ""
+	}
+}
+
+func (node *Node) GetBool() bool {
+	if node.kind == True {
+		return true
+	} else {
+		return false
+	}
+}
+
+func (node *Node) GetNull() bool {
+	if node.kind == Null {
+		return true
+	} else {
+		return false
 	}
 }
 
@@ -62,8 +75,8 @@ type Context struct {
 	stack stack.Stack
 }
 
-// slice移动到下一个指针处
-func (ctx *Context) NextNoWhite() {
+// slice移动到下一个非空白处
+func (ctx *Context) RemoveWhite() {
 	i := 0
 	for ; i < len(ctx.json); i++ {
 		b := ctx.json[i]
@@ -74,8 +87,8 @@ func (ctx *Context) NextNoWhite() {
 	ctx.json = ctx.json[i:]
 }
 
-// 吃掉一个字符
-func (ctx *Context) EatACharacter(c byte) error {
+// 去一个字符
+func (ctx *Context) RemoveACharacter(c byte) error {
 	if len(ctx.json) < 1 || ctx.json[0] != c {
 		return errors.New(fmt.Sprintf("err %v", c))
 	}
@@ -84,10 +97,18 @@ func (ctx *Context) EatACharacter(c byte) error {
 	return nil
 }
 
-// 获取字符串,并把slice指向到第二个"的后面的idx
-func (ctx *Context) GetStrAndEat() (string, error) {
+// peek一个字符
+func (ctx *Context) PeekACharacter() (byte, error) {
+	if len(ctx.json) < 1 {
+		return '0', errors.New("too short")
+	}
+	return ctx.json[0], nil
+}
+
+// 获取""中的字符串,并把slice指向到第二个"的后面的idx
+func (ctx *Context) GetString() (string, error) {
 	if len(ctx.json) < 2 {
-		return "", errors.New("get key error")
+		return "", errors.New("get str error")
 	}
 
 	first := -1
@@ -104,7 +125,7 @@ func (ctx *Context) GetStrAndEat() (string, error) {
 	}
 
 	if first == -1 || second == -1 {
-		return "", errors.New("get key error")
+		return "", errors.New("get str error")
 	}
 
 	key := ctx.json[first+1 : second]
@@ -118,51 +139,130 @@ func (ctx *Context) GetStrAndEat() (string, error) {
 	return key, nil
 }
 
-func ParseJson(json string) (*JsonParse, error) {
-	ctx := &Context{json: json}
+func (ctx *Context) GetSpecifyString(s string) (string, error) {
+	if len(ctx.json) < len(s) {
+		return "", errors.New("get str error")
+	}
+	rtn := ctx.json[:len(s)]
 
+	if rtn != s {
+		return "", errors.New("get str error")
+	}
+
+	ctx.json = ctx.json[len(s):]
+	return rtn, nil
+}
+
+func (ctx *Context) ParseValue() (*Node, error) {
+	value, err := ctx.GetString()
+	if err != nil {
+		return nil, err
+	}
+
+	node := &Node{}
+	node.kind = String
+	node.value = &value
+	return node, nil
+}
+
+func (ctx *Context) ParseStr(specifyStr string, kind Kind) (*Node, error) {
+	_, err := ctx.GetSpecifyString(specifyStr)
+
+	if err != nil {
+		return nil, err
+	}
+
+	node := &Node{}
+	node.kind = kind
+	return node, nil
+}
+
+func (ctx *Context) ParseObject() (*Node, error) {
 	// read {
-	ctx.NextNoWhite()
-	err := ctx.EatACharacter('{')
+	ctx.RemoveWhite()
+	err := ctx.RemoveACharacter('{')
 	if err != nil {
 		return nil, err
 	}
+	ctx.stack.Push(int32('}'))
 
-	// read key
-	ctx.NextNoWhite()
-	key, err := ctx.GetStrAndEat()
-	if err != nil {
-		return nil, err
-	}
+	node := &Node{kind: Object}
 
-	// read colon
-	ctx.NextNoWhite()
-	err = ctx.EatACharacter(':')
-	if err != nil {
-		return nil, err
-	}
+	for {
+		// read key
+		ctx.RemoveWhite()
+		key, err := ctx.GetString()
+		if err != nil {
+			return nil, err
+		}
 
-	// read value
-	value, err := ctx.GetStrAndEat()
-	if err != nil {
-		return nil, err
+		// read colon
+		ctx.RemoveWhite()
+		err = ctx.RemoveACharacter(':')
+		if err != nil {
+			return nil, err
+		}
+
+		// dispatch
+		ctx.RemoveWhite()
+		node, err := ctx.ParseNode()
+		if err != nil {
+			return nil, err
+		}
+
+		// read ,
+		ctx.RemoveWhite()
+		err = ctx.RemoveACharacter(',')
+		if err == nil {
+			break
+		}
 	}
 
 	// read }
-	ctx.NextNoWhite()
-	err = ctx.EatACharacter('}')
+	ctx.RemoveWhite()
+	err = ctx.RemoveACharacter('}')
 	if err != nil {
 		return nil, err
 	}
 
-	// generate node
-	node := &Node{}
-	node.kind = String
-	node.key = &key
-	node.value = &value
+	if ctx.stack.Pop().(int32) != '}' {
+		return nil, errors.New("not match")
+	}
 
-	jp := &JsonParse{}
-	jp.node = node
+	return node, nil
+}
 
+// 在value位置处
+func (ctx *Context) ParseNode() (*Node, error) {
+	c, err := ctx.PeekACharacter()
+	if err != nil {
+		return nil, err
+	}
+
+	switch c {
+	case '"':
+		return ctx.ParseValue()
+	case 'n':
+		return ctx.ParseStr("null", Null)
+	case 't':
+		return ctx.ParseStr("true", True)
+	case 'f':
+		return ctx.ParseStr("false", False)
+	case '[':
+		return nil, nil
+	case '{':
+		return nil, nil
+	}
+
+	return nil, errors.New("unknown value")
+}
+
+func ParseJson(json string) (*JsonParse, error) {
+	ctx := &Context{json: json}
+	node, err := ctx.ParseObject()
+	if err != nil {
+		return nil, err
+	}
+	jp := &JsonParse{node: node}
 	return jp, nil
 }
