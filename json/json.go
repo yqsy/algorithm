@@ -4,6 +4,7 @@ import (
 	"github.com/golang-collections/collections/stack"
 	"errors"
 	"fmt"
+	"strconv"
 )
 
 type Kind int
@@ -18,6 +19,22 @@ const (
 	Object
 )
 
+func isDigit1To9(c byte) bool {
+	if c >= '1' && c <= '9' {
+		return true
+	}
+
+	return false
+}
+
+func isDigit(c byte) bool {
+	if c >= '0' && c <= '9' {
+		return true
+	}
+
+	return false
+}
+
 type Node struct {
 	// 类型,Null,True,False
 	kind Kind
@@ -29,10 +46,10 @@ type Node struct {
 	number *float64
 
 	// 数组
-	array *[]Node
+	array *[]*Node
 
 	// 对象
-	object *map[string]Node
+	object *map[string]*Node
 }
 
 func (node *Node) GetString() string {
@@ -56,6 +73,14 @@ func (node *Node) GetNull() bool {
 		return true
 	} else {
 		return false
+	}
+}
+
+func (node *Node) GetNumber() float64 {
+	if node.kind == Number {
+		return *node.number
+	} else {
+		return 0.0
 	}
 }
 
@@ -84,12 +109,15 @@ func (ctx *Context) RemoveWhite() {
 			break
 		}
 	}
-	ctx.json = ctx.json[i:]
+
+	if i < len(ctx.json) {
+		ctx.json = ctx.json[i:]
+	}
 }
 
 // 去一个字符
 func (ctx *Context) RemoveACharacter(c byte) error {
-	if len(ctx.json) < 1 || ctx.json[0] != c {
+	if len(ctx.json) < 2 || ctx.json[0] != c {
 		return errors.New(fmt.Sprintf("err %v", c))
 	}
 
@@ -127,11 +155,10 @@ func (ctx *Context) GetString() (string, error) {
 	if first == -1 || second == -1 {
 		return "", errors.New("get str error")
 	}
-
 	key := ctx.json[first+1 : second]
 
-	// 第二个"是最后一个字符就返回错误
-	if second == len(ctx.json)-1 {
+	// 第二个超过范围就返回
+	if second+1 >= len(ctx.json) {
 		return "", errors.New("too short")
 	}
 
@@ -140,7 +167,7 @@ func (ctx *Context) GetString() (string, error) {
 }
 
 func (ctx *Context) GetSpecifyString(s string) (string, error) {
-	if len(ctx.json) < len(s) {
+	if len(ctx.json) <= len(s) {
 		return "", errors.New("get str error")
 	}
 	rtn := ctx.json[:len(s)]
@@ -177,6 +204,76 @@ func (ctx *Context) ParseStr(specifyStr string, kind Kind) (*Node, error) {
 	return node, nil
 }
 
+// http://www.json.org/number.gif
+func (ctx *Context) ParseNumber() (*Node, error) {
+	p := 0
+
+	if p < len(ctx.json) && ctx.json[p] == '-' {
+		p++
+	}
+
+	if p < len(ctx.json) && ctx.json[p] == '0' {
+		p++
+	} else {
+		if p >= len(ctx.json) || !isDigit1To9(ctx.json[p]) {
+			return nil, errors.New("parse number error")
+		}
+
+		p++
+
+		for ; p < len(ctx.json) && isDigit(ctx.json[p]); p++ {
+
+		}
+	}
+
+	if p < len(ctx.json) && ctx.json[p] == '.' {
+		p++
+
+		if p >= len(ctx.json) || !isDigit(ctx.json[p]) {
+			return nil, errors.New("parse number error")
+		}
+
+		p++
+
+		for ; p < len(ctx.json) && isDigit(ctx.json[p]); p++ {
+
+		}
+	}
+
+	if p < len(ctx.json) && (ctx.json[p] == 'e' || ctx.json[p] == 'E') {
+		p++
+
+		if p < len(ctx.json) && (ctx.json[p] == '+' || ctx.json[p] == '-') {
+			p++
+		}
+
+		if p >= len(ctx.json) || !isDigit(ctx.json[p]) {
+			return nil, errors.New("parse number error")
+		}
+
+		for ; p < len(ctx.json) && isDigit(ctx.json[p]); p++ {
+
+		}
+	}
+
+	value, err := strconv.ParseFloat(ctx.json[:p], 64)
+	if err != nil {
+		return nil, errors.New("parse number error")
+	}
+
+	if p >= len(ctx.json) {
+		return nil, errors.New("parse number error")
+	}
+
+	ctx.json = ctx.json[p:]
+
+	node := &Node{}
+	node.kind = Number
+	node.number = &value
+	return node, nil
+}
+
+// http://www.json.org/object.gif
 func (ctx *Context) ParseObject() (*Node, error) {
 	// read {
 	ctx.RemoveWhite()
@@ -210,10 +307,17 @@ func (ctx *Context) ParseObject() (*Node, error) {
 			return nil, err
 		}
 
+		// save to map
+		if node.object == nil {
+			m := make(map[string]*Node)
+			node.object = &m
+		}
+		(*node.object)[key] = node
+
 		// read ,
 		ctx.RemoveWhite()
 		err = ctx.RemoveACharacter(',')
-		if err == nil {
+		if err != nil {
 			break
 		}
 	}
@@ -226,6 +330,56 @@ func (ctx *Context) ParseObject() (*Node, error) {
 	}
 
 	if ctx.stack.Pop().(int32) != '}' {
+		return nil, errors.New("not match")
+	}
+
+	return node, nil
+}
+
+// http://www.json.org/array.gif
+func (ctx *Context) ParseArray() (*Node, error) {
+	// read [
+	ctx.RemoveWhite()
+	err := ctx.RemoveACharacter('[')
+	if err != nil {
+		return nil, err
+	}
+	ctx.stack.Push(int32(']'))
+
+	node := &Node{kind: Array}
+
+	for {
+		// dispatch
+		ctx.RemoveWhite()
+		node, err := ctx.ParseNode()
+		if err != nil {
+			return nil, err
+		}
+
+		// save to array
+		if node.array == nil {
+			a := make([]*Node, 0)
+			node.array = &a
+		}
+
+		*node.array = append(*node.array, node)
+
+		// read ,
+		ctx.RemoveWhite()
+		err = ctx.RemoveACharacter(',')
+		if err != nil {
+			break
+		}
+	}
+
+	// read ]
+	ctx.RemoveWhite()
+	err = ctx.RemoveACharacter(']')
+	if err != nil {
+		return nil, err
+	}
+
+	if ctx.stack.Pop().(int32) != ']' {
 		return nil, errors.New("not match")
 	}
 
@@ -249,9 +403,11 @@ func (ctx *Context) ParseNode() (*Node, error) {
 	case 'f':
 		return ctx.ParseStr("false", False)
 	case '[':
-		return nil, nil
+		return ctx.ParseArray()
 	case '{':
-		return nil, nil
+		return ctx.ParseObject()
+	default:
+		return ctx.ParseNumber()
 	}
 
 	return nil, errors.New("unknown value")
