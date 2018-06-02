@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"bytes"
+	"unicode/utf8"
 )
 
 type Kind int
@@ -85,7 +87,6 @@ func (node *Node) GetNumber() float64 {
 }
 
 type JsonParse struct {
-	// 首节点
 	node *Node
 }
 
@@ -146,8 +147,10 @@ func (ctx *Context) GetString() (string, error) {
 			if first == -1 {
 				first = i
 			} else {
-				second = i
-				break
+				if ctx.json[i-1] != '\\' {
+					second = i
+					break
+				}
 			}
 		}
 	}
@@ -155,15 +158,56 @@ func (ctx *Context) GetString() (string, error) {
 	if first == -1 || second == -1 {
 		return "", errors.New("get str error")
 	}
-	key := ctx.json[first+1 : second]
 
 	// 第二个超过范围就返回
 	if second+1 >= len(ctx.json) {
 		return "", errors.New("too short")
 	}
 
+	// decode utf8
+	var buf bytes.Buffer
+
+	for i := first + 1; i < second; {
+		if ctx.json[i] == '\\' {
+			i++
+			if i >= second {
+				return "", errors.New("too short")
+			}
+
+			switch ctx.json[i] {
+			case '"', '\\', '/', 'b', 'f', 'n', 'r', 't':
+				buf.Write([]byte("\\" + string(ctx.json[i])))
+				i++
+			case 'u':
+				i++
+				if i+4 > second {
+					return "", errors.New("too short")
+				}
+
+				r, err := strconv.ParseUint(ctx.json[:i+4], 16, 32)
+
+				if err != nil {
+					return "", err
+				}
+
+				utf8Buf := make([]byte, 4)
+				n := utf8.EncodeRune(utf8Buf, rune(r))
+				if n < 1 {
+					return "", errors.New("utf8 parse error")
+				}
+				buf.Write(utf8Buf)
+
+				i += 4
+			default:
+				return "", errors.New("error transference symbol")
+			}
+		} else {
+			buf.Write([]byte{ctx.json[i]})
+		}
+	}
+
 	ctx.json = ctx.json[second+1:]
-	return key, nil
+	return buf.String(), nil
 }
 
 func (ctx *Context) GetSpecifyString(s string) (string, error) {
