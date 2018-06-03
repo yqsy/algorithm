@@ -1,7 +1,6 @@
 package json
 
 import (
-	"github.com/golang-collections/collections/stack"
 	"errors"
 	"fmt"
 	"strconv"
@@ -105,35 +104,25 @@ func (value *Value) GetObject() *map[string]*Value {
 
 type Context struct {
 	json string
-
-	// 用来做符号对称匹配
-	stack stack.Stack
 }
 
-// slice移动到下一个非空白处
 func (ctx *Context) RemoveWhite() {
 	i := 0
-	for ; i < len(ctx.json); i++ {
-		b := ctx.json[i]
-		if b != ' ' && b != '\t' && b != '\r' && b != '\n' {
-			break
-		}
+	for i < len(ctx.json) && ctx.json[i] <= ' ' {
+		i++
 	}
 
 	ctx.json = ctx.json[i:]
 }
 
-// remove一个字符
 func (ctx *Context) RemoveACharacter(c byte) error {
 	if len(ctx.json) < 1 || ctx.json[0] != c {
 		return errors.New(fmt.Sprintf("err %v", c))
 	}
-
 	ctx.json = ctx.json[1:]
 	return nil
 }
 
-// peek一个字符
 func (ctx *Context) PeekACharacter() (byte, error) {
 	if len(ctx.json) < 1 {
 		return '0', errors.New("too short")
@@ -292,8 +281,8 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 
 		p++
 
-		for ; pValid() && isDigit(ctx.json[p]); p++ {
-
+		for pValid() && isDigit(ctx.json[p]) {
+			p++
 		}
 	}
 
@@ -306,8 +295,8 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 
 		p++
 
-		for ; pValid() && isDigit(ctx.json[p]); p++ {
-
+		for pValid() && isDigit(ctx.json[p]) {
+			p++
 		}
 	}
 
@@ -322,8 +311,8 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 			return nil, errors.New("parse number error")
 		}
 
-		for ; pValid() && isDigit(ctx.json[p]); p++ {
-
+		for pValid() && isDigit(ctx.json[p]) {
+			p++
 		}
 	}
 
@@ -346,8 +335,6 @@ func (ctx *Context) ParseObject() (*Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	ctx.stack.Push(int32('}'))
-
 	value := &Value{kind: Object}
 
 	for {
@@ -393,10 +380,6 @@ func (ctx *Context) ParseObject() (*Value, error) {
 		return nil, err
 	}
 
-	if ctx.stack.Pop().(int32) != '}' {
-		return nil, errors.New("not match")
-	}
-
 	return value, nil
 }
 
@@ -406,7 +389,6 @@ func (ctx *Context) ParseArray() (*Value, error) {
 	if err != nil {
 		return nil, err
 	}
-	ctx.stack.Push(int32(']'))
 
 	value := &Value{kind: Array}
 
@@ -438,10 +420,6 @@ func (ctx *Context) ParseArray() (*Value, error) {
 	err = ctx.RemoveACharacter(']')
 	if err != nil {
 		return nil, err
-	}
-
-	if ctx.stack.Pop().(int32) != ']' {
-		return nil, errors.New("not match")
 	}
 
 	return value, nil
