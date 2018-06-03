@@ -85,10 +85,6 @@ func TestArray(t *testing.T) {
 	if a == nil {
 		t.Fatal("err")
 	}
-
-	for _, e := range *a {
-		fmt.Println(e.GetString())
-	}
 }
 
 func TestObject(t *testing.T) {
@@ -150,6 +146,19 @@ func TestObject(t *testing.T) {
 	}
 
 	if !isDoubleEqual((*o)["1"].GetNumber(), 1) {
+		t.Fatal("err")
+	}
+}
+
+func TestSimpleKind(t *testing.T) {
+	json := `null`
+
+	jp, err := ParseJson(json)
+	if jp == nil || err != nil {
+		t.Fatal("err")
+	}
+
+	if !jp.Get("").GetNull() {
 		t.Fatal("err")
 	}
 }

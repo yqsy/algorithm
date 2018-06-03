@@ -168,11 +168,6 @@ func (ctx *Context) GetString() (string, error) {
 		return "", errors.New("get str error")
 	}
 
-	// 第二个超过范围就返回
-	if second+1 >= len(ctx.json) {
-		return "", errors.New("too short")
-	}
-
 	// decode utf8
 	var buf bytes.Buffer
 
@@ -243,7 +238,7 @@ func (ctx *Context) GetString() (string, error) {
 
 // 获取指定的字符串,并把slice指向字符串后面的idx
 func (ctx *Context) GetWord(s string) (string, error) {
-	if len(ctx.json) <= len(s) {
+	if len(ctx.json) < len(s) {
 		return "", errors.New("get str error")
 	}
 	rtn := ctx.json[:len(s)]
@@ -284,42 +279,44 @@ func (ctx *Context) ParseWord(specifyStr string, kind Kind) (*Value, error) {
 func (ctx *Context) ParseNumber() (*Value, error) {
 	p := 0
 
-	if p < len(ctx.json) && ctx.json[p] == '-' {
+	pValid := func() bool { return p < len(ctx.json) }
+
+	if pValid() && ctx.json[p] == '-' {
 		p++
 	}
 
-	if p < len(ctx.json) && ctx.json[p] == '0' {
+	if pValid() && ctx.json[p] == '0' {
 		p++
 	} else {
-		if p >= len(ctx.json) || !isDigit1To9(ctx.json[p]) {
+		if !pValid() || !isDigit1To9(ctx.json[p]) {
 			return nil, errors.New("parse number error")
 		}
 
 		p++
 
-		for ; p < len(ctx.json) && isDigit(ctx.json[p]); p++ {
+		for ; pValid() && isDigit(ctx.json[p]); p++ {
 
 		}
 	}
 
-	if p < len(ctx.json) && ctx.json[p] == '.' {
+	if pValid() && ctx.json[p] == '.' {
 		p++
 
-		if p >= len(ctx.json) || !isDigit(ctx.json[p]) {
+		if !pValid() || !isDigit(ctx.json[p]) {
 			return nil, errors.New("parse number error")
 		}
 
 		p++
 
-		for ; p < len(ctx.json) && isDigit(ctx.json[p]); p++ {
+		for ; pValid() && isDigit(ctx.json[p]); p++ {
 
 		}
 	}
 
-	if p < len(ctx.json) && (ctx.json[p] == 'e' || ctx.json[p] == 'E') {
+	if pValid() && (ctx.json[p] == 'e' || ctx.json[p] == 'E') {
 		p++
 
-		if p < len(ctx.json) && (ctx.json[p] == '+' || ctx.json[p] == '-') {
+		if pValid() && (ctx.json[p] == '+' || ctx.json[p] == '-') {
 			p++
 		}
 
@@ -327,17 +324,13 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 			return nil, errors.New("parse number error")
 		}
 
-		for ; p < len(ctx.json) && isDigit(ctx.json[p]); p++ {
+		for ; pValid() && isDigit(ctx.json[p]); p++ {
 
 		}
 	}
 
 	number, err := strconv.ParseFloat(ctx.json[:p], 64)
 	if err != nil {
-		return nil, errors.New("parse number error")
-	}
-
-	if p >= len(ctx.json) {
 		return nil, errors.New("parse number error")
 	}
 
@@ -491,6 +484,10 @@ type Parser struct {
 
 //  a , a.b , a.b.c  . 是对象的属性
 func (jp *Parser) Get(key string) *Value {
+	if key == "" {
+		return jp.value
+	}
+
 	// parse
 	a := strings.Split(key, ".")
 
