@@ -53,8 +53,8 @@ func TestNumber(t *testing.T) {
 }
 
 func checkString(v string, ctx *Context, t *testing.T) {
-	node, err := ctx.ParseValue()
-	if err != nil || node.GetString() != v {
+	value, err := ctx.ParseString()
+	if err != nil || value.GetString() != v {
 		t.Fatal(fmt.Sprintf("err : %v", ctx.json))
 	}
 }
@@ -75,12 +75,12 @@ func TestArray(t *testing.T) {
 		t.Fatal("err")
 	}
 
-	node := jp.Get("persons")
-	if node == nil {
+	value := jp.Get("persons")
+	if value == nil {
 		t.Fatal("err")
 	}
 
-	a := node.GetArray()
+	a := value.GetArray()
 
 	if a == nil {
 		t.Fatal("err")

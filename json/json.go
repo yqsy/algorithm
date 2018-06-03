@@ -38,112 +38,69 @@ func isDigit(c byte) bool {
 	return false
 }
 
-type Node struct {
+type Value struct {
 	// 类型,Null,True,False
 	kind Kind
 
 	// 字符串
-	value *string
+	string_ *string
 
 	// 数字
 	number *float64
 
 	// 数组
-	array *[]*Node
+	array *[]*Value
 
 	// 对象
-	object *map[string]*Node
+	object *map[string]*Value
 }
 
-func (node *Node) GetNull() bool {
-	if node.kind == Null {
+func (value *Value) GetNull() bool {
+	if value.kind == Null {
 		return true
 	} else {
 		return false
 	}
 }
 
-func (node *Node) GetBool() bool {
-	if node.kind == True {
+func (value *Value) GetBool() bool {
+	if value.kind == True {
 		return true
 	} else {
 		return false
 	}
 }
 
-func (node *Node) GetString() string {
-	if node.kind == String || node.value != nil {
-		return *node.value
+func (value *Value) GetString() string {
+	if value.kind == String || value.string_ != nil {
+		return *value.string_
 	} else {
 		return ""
 	}
 }
 
-func (node *Node) GetNumber() float64 {
-	if node.kind == Number {
-		return *node.number
+func (value *Value) GetNumber() float64 {
+	if value.kind == Number {
+		return *value.number
 	} else {
 		return 0.0
 	}
 }
 
-func (node *Node) GetArray() *[]*Node {
-	if node.kind == Array {
-		return node.array
+func (value *Value) GetArray() *[]*Value {
+	if value.kind == Array {
+		return value.array
 	} else {
 		return nil
 	}
 }
 
-func (node *Node) GetObject() *map[string]*Node {
-	if node.kind == Object {
-		return node.object
+func (value *Value) GetObject() *map[string]*Value {
+	if value.kind == Object {
+		return value.object
 	} else {
 		return nil
 	}
-}
-
-type JsonParse struct {
-	node *Node
-}
-
-//  a , a.b , a.b.c
-// . 是对象的属性
-func (jp *JsonParse) Get(key string) *Node {
-	// parse
-	a := strings.Split(key, ".")
-
-	if jp.node == nil {
-		return nil
-	}
-
-	node := jp.node
-
-	for _, e := range a {
-		if node.object == nil {
-			return nil
-		}
-
-		nd, ok := (*node.object)[e]
-
-		if !ok {
-			return nil
-		}
-
-		node = nd
-	}
-
-	return node
-}
-
-func ParseJson(json string) (*JsonParse, error) {
-	ctx := &Context{json: json}
-	node, err := ctx.ParseObject()
-	if err != nil {
-		return nil, err
-	}
-	jp := &JsonParse{node: node}
-	return jp, nil
 }
 
 type Context struct {
@@ -284,7 +241,7 @@ func (ctx *Context) GetString() (string, error) {
 	return buf.String(), nil
 }
 
-func (ctx *Context) GetSpecifyString(s string) (string, error) {
+func (ctx *Context) GetWord(s string) (string, error) {
 	if len(ctx.json) <= len(s) {
 		return "", errors.New("get str error")
 	}
@@ -298,32 +255,32 @@ func (ctx *Context) GetSpecifyString(s string) (string, error) {
 	return rtn, nil
 }
 
-func (ctx *Context) ParseValue() (*Node, error) {
-	value, err := ctx.GetString()
+func (ctx *Context) ParseString() (*Value, error) {
+	string_, err := ctx.GetString()
 	if err != nil {
 		return nil, err
 	}
 
-	node := &Node{}
-	node.kind = String
-	node.value = &value
-	return node, nil
+	value := &Value{}
+	value.kind = String
+	value.string_ = &string_
+	return value, nil
 }
 
-func (ctx *Context) ParseSpecifyString(specifyStr string, kind Kind) (*Node, error) {
-	_, err := ctx.GetSpecifyString(specifyStr)
+func (ctx *Context) ParseWord(specifyStr string, kind Kind) (*Value, error) {
+	_, err := ctx.GetWord(specifyStr)
 
 	if err != nil {
 		return nil, err
 	}
 
-	node := &Node{}
-	node.kind = kind
-	return node, nil
+	value := &Value{}
+	value.kind = kind
+	return value, nil
 }
 
 // http://www.json.org/number.gif
-func (ctx *Context) ParseNumber() (*Node, error) {
+func (ctx *Context) ParseNumber() (*Value, error) {
 	p := 0
 
 	if p < len(ctx.json) && ctx.json[p] == '-' {
@@ -374,7 +331,7 @@ func (ctx *Context) ParseNumber() (*Node, error) {
 		}
 	}
 
-	value, err := strconv.ParseFloat(ctx.json[:p], 64)
+	number, err := strconv.ParseFloat(ctx.json[:p], 64)
 	if err != nil {
 		return nil, errors.New("parse number error")
 	}
@@ -385,14 +342,14 @@ func (ctx *Context) ParseNumber() (*Node, error) {
 
 	ctx.json = ctx.json[p:]
 
-	node := &Node{}
-	node.kind = Number
-	node.number = &value
-	return node, nil
+	value := &Value{}
+	value.kind = Number
+	value.number = &number
+	return value, nil
 }
 
 // http://www.json.org/object.gif
-func (ctx *Context) ParseObject() (*Node, error) {
+func (ctx *Context) ParseObject() (*Value, error) {
 	// read {
 	ctx.RemoveWhite()
 	err := ctx.RemoveACharacter('{')
@@ -401,7 +358,7 @@ func (ctx *Context) ParseObject() (*Node, error) {
 	}
 	ctx.stack.Push(int32('}'))
 
-	node := &Node{kind: Object}
+	value := &Value{kind: Object}
 
 	for {
 		// read key
@@ -419,18 +376,17 @@ func (ctx *Context) ParseObject() (*Node, error) {
 		}
 
 		// dispatch
-		ctx.RemoveWhite()
-		attribute, err := ctx.ParseNode()
+		attribute, err := ctx.ParseValue()
 		if err != nil {
 			return nil, err
 		}
 
 		// save to map
-		if node.object == nil {
-			m := make(map[string]*Node)
-			node.object = &m
+		if value.object == nil {
+			m := make(map[string]*Value)
+			value.object = &m
 		}
-		(*node.object)[key] = attribute
+		(*value.object)[key] = attribute
 
 		// read ,
 		ctx.RemoveWhite()
@@ -451,11 +407,11 @@ func (ctx *Context) ParseObject() (*Node, error) {
 		return nil, errors.New("not match")
 	}
 
-	return node, nil
+	return value, nil
 }
 
 // http://www.json.org/array.gif
-func (ctx *Context) ParseArray() (*Node, error) {
+func (ctx *Context) ParseArray() (*Value, error) {
 	// read [
 	ctx.RemoveWhite()
 	err := ctx.RemoveACharacter('[')
@@ -464,23 +420,22 @@ func (ctx *Context) ParseArray() (*Node, error) {
 	}
 	ctx.stack.Push(int32(']'))
 
-	node := &Node{kind: Array}
+	value := &Value{kind: Array}
 
 	for {
 		// dispatch
-		ctx.RemoveWhite()
-		ele, err := ctx.ParseNode()
+		ele, err := ctx.ParseValue()
 		if err != nil {
 			return nil, err
 		}
 
 		// save to array
-		if node.array == nil {
-			a := make([]*Node, 0)
-			node.array = &a
+		if value.array == nil {
+			a := make([]*Value, 0)
+			value.array = &a
 		}
 
-		*node.array = append(*node.array, ele)
+		*value.array = append(*value.array, ele)
 
 		// read ,
 		ctx.RemoveWhite()
@@ -501,11 +456,13 @@ func (ctx *Context) ParseArray() (*Node, error) {
 		return nil, errors.New("not match")
 	}
 
-	return node, nil
+	return value, nil
 }
 
-// 在value位置处
-func (ctx *Context) ParseNode() (*Node, error) {
+// http://www.json.org/value.gif
+func (ctx *Context) ParseValue() (*Value, error) {
+	ctx.RemoveWhite()
+
 	c, err := ctx.PeekACharacter()
 	if err != nil {
 		return nil, err
@@ -513,13 +470,13 @@ func (ctx *Context) ParseNode() (*Node, error) {
 
 	switch c {
 	case '"':
-		return ctx.ParseValue()
+		return ctx.ParseString()
 	case 'n':
-		return ctx.ParseSpecifyString("null", Null)
+		return ctx.ParseWord("null", Null)
 	case 't':
-		return ctx.ParseSpecifyString("true", True)
+		return ctx.ParseWord("true", True)
 	case 'f':
-		return ctx.ParseSpecifyString("false", False)
+		return ctx.ParseWord("false", False)
 	case '[':
 		return ctx.ParseArray()
 	case '{':
@@ -529,4 +486,47 @@ func (ctx *Context) ParseNode() (*Node, error) {
 	}
 
 	return nil, errors.New("unknown value")
+}
+
+type JsonParse struct {
+	value *Value
+}
+
+//  a , a.b , a.b.c
+// . 是对象的属性
+func (jp *JsonParse) Get(key string) *Value {
+	// parse
+	a := strings.Split(key, ".")
+
+	if jp.value == nil {
+		return nil
+	}
+
+	value := jp.value
+
+	for _, e := range a {
+		if value.object == nil {
+			return nil
+		}
+
+		nd, ok := (*value.object)[e]
+
+		if !ok {
+			return nil
+		}
+
+		value = nd
+	}
+
+	return value
+}
+
+func ParseJson(json string) (*JsonParse, error) {
+	ctx := &Context{json: json}
+	value, err := ctx.ParseValue()
+	if err != nil {
+		return nil, err
+	}
+	jp := &JsonParse{value: value}
+	return jp, nil
 }
