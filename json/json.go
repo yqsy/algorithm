@@ -125,7 +125,7 @@ func (ctx *Context) RemoveWhite() {
 	}
 }
 
-// 去一个字符
+// remove一个字符
 func (ctx *Context) RemoveACharacter(c byte) error {
 	if len(ctx.json) < 2 || ctx.json[0] != c {
 		return errors.New(fmt.Sprintf("err %v", c))
@@ -241,6 +241,7 @@ func (ctx *Context) GetString() (string, error) {
 	return buf.String(), nil
 }
 
+// 获取指定的字符串,并把slice指向字符串后面的idx
 func (ctx *Context) GetWord(s string) (string, error) {
 	if len(ctx.json) <= len(s) {
 		return "", errors.New("get str error")
@@ -484,13 +485,12 @@ func (ctx *Context) ParseValue() (*Value, error) {
 	return nil, errors.New("unknown value")
 }
 
-type JsonParse struct {
+type Parser struct {
 	value *Value
 }
 
-//  a , a.b , a.b.c
-// . 是对象的属性
-func (jp *JsonParse) Get(key string) *Value {
+//  a , a.b , a.b.c  . 是对象的属性
+func (jp *Parser) Get(key string) *Value {
 	// parse
 	a := strings.Split(key, ".")
 
@@ -517,12 +517,12 @@ func (jp *JsonParse) Get(key string) *Value {
 	return value
 }
 
-func ParseJson(json string) (*JsonParse, error) {
+func ParseJson(json string) (*Parser, error) {
 	ctx := &Context{json: json}
 	value, err := ctx.ParseValue()
 	if err != nil {
 		return nil, err
 	}
-	jp := &JsonParse{value: value}
+	jp := &Parser{value: value}
 	return jp, nil
 }
