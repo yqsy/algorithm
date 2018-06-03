@@ -51,3 +51,105 @@ func TestNumber(t *testing.T) {
 	checkNumber(-1.7976931348623157e+308, &Context{json: "-1.7976931348623157e+308 "}, t)
 
 }
+
+func checkString(v string, ctx *Context, t *testing.T) {
+	node, err := ctx.ParseValue()
+	if err != nil || node.GetString() != v {
+		t.Fatal(fmt.Sprintf("err : %v", ctx.json))
+	}
+}
+
+func TestString(t *testing.T) {
+	checkString("", &Context{json: `"" `}, t)
+	checkString("Hello", &Context{json: ` "Hello" `}, t)
+	checkString("Hello\nWorld", &Context{json: `"Hello\nWorld" `}, t)
+	checkString("\" \\ / \b \f \n \r \t", &Context{json: `"\" \\ \/ \b \f \n \r \t" `}, t)
+	checkString("Hello\u0000World", &Context{json: "\"Hello\\u0000World\" "}, t)
+	checkString("\x24", &Context{json: `"\u0024" `}, t)
+	checkString("\xE2\x82\xAC", &Context{json: `"\u20AC" `}, t)
+}
+
+func TestArray(t *testing.T) {
+	jp, err := ParseJson(`{"persons": ["123","456","789"]} `)
+	if jp == nil || err != nil {
+		t.Fatal("err")
+	}
+
+	node := jp.Get("persons")
+	if node == nil {
+		t.Fatal("err")
+	}
+
+	a := node.GetArray()
+
+	if a == nil {
+		t.Fatal("err")
+	}
+
+	for _, e := range *a {
+		fmt.Println(e.GetString())
+	}
+}
+
+func TestObject(t *testing.T) {
+
+	json := `
+{
+"n" : null  ,
+"f" : false ,
+"t" : true,
+"i" : 123,
+"s" : "abc", 
+"a" : [ 1, 2, 3],
+"o" : { "1" : 1, "2" : 2, "3" : 3}
+}
+`
+	jp, err := ParseJson(json)
+	if jp == nil || err != nil {
+		t.Fatal("err")
+	}
+
+	if !jp.Get("n").GetNull() {
+		t.Fatal("err")
+	}
+
+	if jp.Get("f").GetBool() {
+		t.Fatal("err")
+	}
+
+	if !jp.Get("t").GetBool() {
+		t.Fatal("err")
+	}
+
+	v := jp.Get("i").GetNumber()
+
+	if !isDoubleEqual(v, 123) {
+		t.Fatal("err")
+	}
+
+	if jp.Get("s").GetString() != "abc" {
+		t.Fatal("err")
+	}
+
+	a := jp.Get("a")
+
+	for i := 0; i < 3; i++ {
+		if !isDoubleEqual((*a.GetArray())[i].GetNumber(), float64(i+1)) {
+			t.Fatal("err")
+		}
+	}
+
+	o := jp.Get("o").GetObject()
+
+	if !isDoubleEqual((*o)["3"].GetNumber(), 3) {
+		t.Fatal("err")
+	}
+
+	if !isDoubleEqual((*o)["2"].GetNumber(), 2) {
+		t.Fatal("err")
+	}
+
+	if !isDoubleEqual((*o)["1"].GetNumber(), 1) {
+		t.Fatal("err")
+	}
+}

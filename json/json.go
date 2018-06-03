@@ -7,18 +7,19 @@ import (
 	"strconv"
 	"bytes"
 	"unicode/utf8"
+	"strings"
 )
 
 type Kind int
 
 const (
 	Null   Kind = 0
-	True
-	False
-	String
-	Number
-	Array
-	Object
+	True        = 1
+	False       = 2
+	String      = 3
+	Number      = 4
+	Array       = 5
+	Object      = 6
 )
 
 func isDigit1To9(c byte) bool {
@@ -54,11 +55,11 @@ type Node struct {
 	object *map[string]*Node
 }
 
-func (node *Node) GetString() string {
-	if node.kind == String || node.value != nil {
-		return *node.value
+func (node *Node) GetNull() bool {
+	if node.kind == Null {
+		return true
 	} else {
-		return ""
+		return false
 	}
 }
 
@@ -70,11 +71,11 @@ func (node *Node) GetBool() bool {
 	}
 }
 
-func (node *Node) GetNull() bool {
-	if node.kind == Null {
-		return true
+func (node *Node) GetString() string {
+	if node.kind == String || node.value != nil {
+		return *node.value
 	} else {
-		return false
+		return ""
 	}
 }
 
@@ -86,12 +87,63 @@ func (node *Node) GetNumber() float64 {
 	}
 }
 
+func (node *Node) GetArray() *[]*Node {
+	if node.kind == Array {
+		return node.array
+	} else {
+		return nil
+	}
+}
+
+func (node *Node) GetObject() *map[string]*Node {
+	if node.kind == Object {
+		return node.object
+	} else {
+		return nil
+	}
+}
+
 type JsonParse struct {
 	node *Node
 }
 
+//  a , a.b , a.b.c
+// . 是对象的属性
 func (jp *JsonParse) Get(key string) *Node {
-	return jp.node
+	// parse
+	a := strings.Split(key, ".")
+
+	if jp.node == nil {
+		return nil
+	}
+
+	node := jp.node
+
+	for _, e := range a {
+		if node.object == nil {
+			return nil
+		}
+
+		nd, ok := (*node.object)[e]
+
+		if !ok {
+			return nil
+		}
+
+		node = nd
+	}
+
+	return node
+}
+
+func ParseJson(json string) (*JsonParse, error) {
+	ctx := &Context{json: json}
+	node, err := ctx.ParseObject()
+	if err != nil {
+		return nil, err
+	}
+	jp := &JsonParse{node: node}
+	return jp, nil
 }
 
 type Context struct {
@@ -175,8 +227,29 @@ func (ctx *Context) GetString() (string, error) {
 			}
 
 			switch ctx.json[i] {
-			case '"', '\\', '/', 'b', 'f', 'n', 'r', 't':
-				buf.Write([]byte("\\" + string(ctx.json[i])))
+			case '"':
+				buf.Write([]byte{'"'})
+				i++
+			case '\\':
+				buf.Write([]byte{'\\'})
+				i++
+			case '/':
+				buf.Write([]byte{'/'})
+				i++
+			case 'b':
+				buf.Write([]byte{'\b'})
+				i++
+			case 'f':
+				buf.Write([]byte{'\f'})
+				i++
+			case 'n':
+				buf.Write([]byte{'\n'})
+				i++
+			case 'r':
+				buf.Write([]byte{'\r'})
+				i++
+			case 't':
+				buf.Write([]byte{'\t'})
 				i++
 			case 'u':
 				i++
@@ -184,18 +257,18 @@ func (ctx *Context) GetString() (string, error) {
 					return "", errors.New("too short")
 				}
 
-				r, err := strconv.ParseUint(ctx.json[:i+4], 16, 32)
+				r, err := strconv.ParseUint(ctx.json[i:i+4], 16, 32)
 
 				if err != nil {
 					return "", err
 				}
 
-				utf8Buf := make([]byte, 4)
+				utf8Buf := make([]byte, 8)
 				n := utf8.EncodeRune(utf8Buf, rune(r))
 				if n < 1 {
 					return "", errors.New("utf8 parse error")
 				}
-				buf.Write(utf8Buf)
+				buf.Write(utf8Buf[:n])
 
 				i += 4
 			default:
@@ -203,6 +276,7 @@ func (ctx *Context) GetString() (string, error) {
 			}
 		} else {
 			buf.Write([]byte{ctx.json[i]})
+			i++
 		}
 	}
 
@@ -236,7 +310,7 @@ func (ctx *Context) ParseValue() (*Node, error) {
 	return node, nil
 }
 
-func (ctx *Context) ParseStr(specifyStr string, kind Kind) (*Node, error) {
+func (ctx *Context) ParseSpecifyString(specifyStr string, kind Kind) (*Node, error) {
 	_, err := ctx.GetSpecifyString(specifyStr)
 
 	if err != nil {
@@ -346,7 +420,7 @@ func (ctx *Context) ParseObject() (*Node, error) {
 
 		// dispatch
 		ctx.RemoveWhite()
-		node, err := ctx.ParseNode()
+		attribute, err := ctx.ParseNode()
 		if err != nil {
 			return nil, err
 		}
@@ -356,7 +430,7 @@ func (ctx *Context) ParseObject() (*Node, error) {
 			m := make(map[string]*Node)
 			node.object = &m
 		}
-		(*node.object)[key] = node
+		(*node.object)[key] = attribute
 
 		// read ,
 		ctx.RemoveWhite()
@@ -395,7 +469,7 @@ func (ctx *Context) ParseArray() (*Node, error) {
 	for {
 		// dispatch
 		ctx.RemoveWhite()
-		node, err := ctx.ParseNode()
+		ele, err := ctx.ParseNode()
 		if err != nil {
 			return nil, err
 		}
@@ -406,7 +480,7 @@ func (ctx *Context) ParseArray() (*Node, error) {
 			node.array = &a
 		}
 
-		*node.array = append(*node.array, node)
+		*node.array = append(*node.array, ele)
 
 		// read ,
 		ctx.RemoveWhite()
@@ -441,11 +515,11 @@ func (ctx *Context) ParseNode() (*Node, error) {
 	case '"':
 		return ctx.ParseValue()
 	case 'n':
-		return ctx.ParseStr("null", Null)
+		return ctx.ParseSpecifyString("null", Null)
 	case 't':
-		return ctx.ParseStr("true", True)
+		return ctx.ParseSpecifyString("true", True)
 	case 'f':
-		return ctx.ParseStr("false", False)
+		return ctx.ParseSpecifyString("false", False)
 	case '[':
 		return ctx.ParseArray()
 	case '{':
@@ -455,14 +529,4 @@ func (ctx *Context) ParseNode() (*Node, error) {
 	}
 
 	return nil, errors.New("unknown value")
-}
-
-func ParseJson(json string) (*JsonParse, error) {
-	ctx := &Context{json: json}
-	node, err := ctx.ParseObject()
-	if err != nil {
-		return nil, err
-	}
-	jp := &JsonParse{node: node}
-	return jp, nil
 }
