@@ -35,19 +35,15 @@ func isDigit(c byte) bool {
 }
 
 type Value struct {
-	// 类型,Null,True,False
+	// Null,True,False
 	kind Kind
 
-	// 字符串
 	string_ *string
 
-	// 数字
 	number *float64
 
-	// 数组
 	array *[]*Value
 
-	// 对象
 	object *map[string]*Value
 }
 
@@ -110,7 +106,7 @@ func (ctx *Context) PeekACharacter() (byte, error) {
 	return ctx.json[0], nil
 }
 
-// 获取""中的字符串
+// get string from ""
 func (ctx *Context) GetString() (string, error) {
 	if err := ctx.RemoveACharacter('"'); err != nil {
 		return "", err
@@ -155,7 +151,7 @@ func (ctx *Context) GetString() (string, error) {
 	return "", errors.New("parse string err")
 }
 
-// 获取指定字符串
+// get specify word
 func (ctx *Context) GetWord(s string) (string, error) {
 	if len(ctx.json) < len(s) {
 		return "", errors.New("get str error")
