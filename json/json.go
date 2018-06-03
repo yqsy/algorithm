@@ -2,7 +2,6 @@ package json
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 	"bytes"
@@ -93,7 +92,7 @@ func (ctx *Context) RemoveWhite() {
 
 func (ctx *Context) RemoveACharacter(c byte) error {
 	if len(ctx.json) < 1 || ctx.json[0] != c {
-		return errors.New(fmt.Sprintf("err %v", c))
+		return errors.New("syntax error")
 	}
 	ctx.json = ctx.json[1:]
 	return nil
@@ -101,7 +100,7 @@ func (ctx *Context) RemoveACharacter(c byte) error {
 
 func (ctx *Context) PeekACharacter() (byte, error) {
 	if len(ctx.json) < 1 {
-		return '0', errors.New("too short")
+		return '0', errors.New("syntax error")
 	}
 	return ctx.json[0], nil
 }
@@ -148,17 +147,17 @@ func (ctx *Context) GetString() (string, error) {
 		}
 	}
 
-	return "", errors.New("parse string err")
+	return "", errors.New("syntax error")
 }
 
 // get specify word
 func (ctx *Context) GetWord(s string) (string, error) {
 	if len(ctx.json) < len(s) {
-		return "", errors.New("get str error")
+		return "", errors.New("syntax error")
 	}
 	rtn := ctx.json[:len(s)]
 	if rtn != s {
-		return "", errors.New("get str error")
+		return "", errors.New("syntax error")
 	}
 	ctx.json = ctx.json[len(s):]
 	return rtn, nil
@@ -195,7 +194,7 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 		p++
 	} else {
 		if !pValid() || !isDigit1To9(ctx.json[p]) {
-			return nil, errors.New("parse number error")
+			return nil, errors.New("syntax error")
 		}
 		p++
 		for pValid() && isDigit(ctx.json[p]) {
@@ -206,7 +205,7 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 	if pValid() && ctx.json[p] == '.' {
 		p++
 		if !pValid() || !isDigit(ctx.json[p]) {
-			return nil, errors.New("parse number error")
+			return nil, errors.New("syntax error")
 		}
 		p++
 		for pValid() && isDigit(ctx.json[p]) {
@@ -220,7 +219,7 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 			p++
 		}
 		if !pValid() || !isDigit(ctx.json[p]) {
-			return nil, errors.New("parse number error")
+			return nil, errors.New("syntax error")
 		}
 		for pValid() && isDigit(ctx.json[p]) {
 			p++
@@ -229,7 +228,7 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 
 	number, err := strconv.ParseFloat(ctx.json[:p], 64)
 	if err != nil {
-		return nil, errors.New("parse number error")
+		return nil, errors.New("syntax error")
 	}
 	ctx.json = ctx.json[p:]
 	return &Value{kind: Number, number: &number}, nil
@@ -350,7 +349,7 @@ func (ctx *Context) ParseValue() (*Value, error) {
 		return ctx.ParseNumber()
 	}
 
-	return nil, errors.New("unknown value")
+	return nil, errors.New("syntax error")
 }
 
 type Parser struct {

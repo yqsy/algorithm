@@ -205,4 +205,5 @@ func TestSimpleKind(t *testing.T) {
 	if !isDoubleEqual((*jp.Get("").GetArray())[0].GetNumber(), 1) {
 		t.Fatal("err")
 	}
+
 }

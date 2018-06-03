@@ -1,42 +1,99 @@
-if (typeof MyJson !== "object") {
-    MyJson = {};
-}
+jsonParse = function () {
 
-(function () {
-    "use script";
+    let json = "";
 
-    let ch; // current character
-    let at; // current idx
-    let text;
+    let p = 0;
+
+    let escapee = {
+        "\"": "\"",
+        "\\": "\\",
+        "/": "/",
+        b: "\b",
+        f: "\f",
+        n: "\n",
+        r: "\r",
+        t: "\t"
+    };
 
     let error = function (m) {
-
         throw {
             name: "SyntaxError",
-            message: m,
-            at: at,
-            text: text
+            message: m
         };
     };
 
-    let value = function () {
+    let removeWhite = function () {
+        let i = 0;
+        while (i < json.length && json[i] <= " ") {
+            i++;
+        }
+        p = i;
+    };
 
-
+    let removeACharacter = function (c) {
+        if (json.length < 1 || json[0] !== c) {
+            error("SyntaxError");
+        }
+        p++;
     };
 
 
-    if (typeof MyJson.parse !== "function") {
-        MyJson.parse = function (source, reviver) {
-            text = source;
+    let peekACharacter = function () {
+        if (json.length < 1) {
+            error("SyntaxError");
+        }
+        return json[0];
+    };
 
-            if (typeof reviver === "function") {
-                // 调用回调函数
-                // 暂时不实现
-            } else {
+
+    let getString = function () {
+        removeACharacter("\"");
+
+        let string = "";
+
+        for (let i = 0; i < json.length; i++) {
+            if (json[i] === "\"") {
+                p = i + 1;
+                return string;
+            }
+
+            if (json[i] === "\\") {
+                i++;
+
+                if (i >= json.length) {
+                    break;
+                }
+
+                if (typeof escapee[json[i]] === "string") {
+                    string += escapee[json[i]];
+                } else if (json[i] === "u") {
+                    if (i + 4 >= json.length) {
+                        break;
+                    }
+
+                    let r = parseInt(json.slice(i + 1, i + 5), 16);
+                    string += String.fromCharCode(r);
+                    i += 4;
+                } else {
+                    break;
+                }
 
             }
-        };
-    }
+        }
 
-}());
+        error("SyntaxError");
+    };
+
+    return function (text) {
+        json = text;
+        p = 0;
+
+
+    };
+
+}();
+
+
+
+
 
