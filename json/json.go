@@ -350,8 +350,6 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 
 // http://www.json.org/object.gif
 func (ctx *Context) ParseObject() (*Value, error) {
-	// read {
-	ctx.RemoveWhite()
 	err := ctx.RemoveACharacter('{')
 	if err != nil {
 		return nil, err
@@ -412,8 +410,6 @@ func (ctx *Context) ParseObject() (*Value, error) {
 
 // http://www.json.org/array.gif
 func (ctx *Context) ParseArray() (*Value, error) {
-	// read [
-	ctx.RemoveWhite()
 	err := ctx.RemoveACharacter('[')
 	if err != nil {
 		return nil, err
