@@ -61,7 +61,7 @@ func checkString(v string, ctx *Context, t *testing.T) {
 
 func TestString(t *testing.T) {
 	checkString("", &Context{json: `"" `}, t)
-	checkString("Hello", &Context{json: ` "Hello" `}, t)
+	checkString("Hello", &Context{json: `"Hello" `}, t)
 	checkString("Hello\nWorld", &Context{json: `"Hello\nWorld" `}, t)
 	checkString("\" \\ / \b \f \n \r \t", &Context{json: `"\" \\ \/ \b \f \n \r \t" `}, t)
 	checkString("Hello\u0000World", &Context{json: "\"Hello\\u0000World\" "}, t)

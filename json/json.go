@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"bytes"
 	"unicode/utf8"
-	"strings"
 )
 
 type Kind int
@@ -21,20 +21,17 @@ const (
 	Object      = 6
 )
 
-func isDigit1To9(c byte) bool {
-	if c >= '1' && c <= '9' {
-		return true
-	}
+var (
+	Escapee = map[byte]byte{'"': '"', '\\': '\\', '/': '/', 'b': '\b', 'f': '\f', 'n': '\n', 'r': '\r', 't': '\t'}
+)
 
-	return false
+func isDigit1To9(c byte) bool {
+	return c >= '1' && c <= '9'
 }
 
 func isDigit(c byte) bool {
-	if c >= '0' && c <= '9' {
-		return true
-	}
+	return c >= '0' && c <= '9'
 
-	return false
 }
 
 type Value struct {
@@ -55,19 +52,11 @@ type Value struct {
 }
 
 func (value *Value) GetNull() bool {
-	if value.kind == Null {
-		return true
-	} else {
-		return false
-	}
+	return value.kind == Null
 }
 
 func (value *Value) GetBool() bool {
-	if value.kind == True {
-		return true
-	} else {
-		return false
-	}
+	return value.kind == True
 }
 
 func (value *Value) GetString() string {
@@ -87,19 +76,11 @@ func (value *Value) GetNumber() float64 {
 }
 
 func (value *Value) GetArray() *[]*Value {
-	if value.kind == Array {
-		return value.array
-	} else {
-		return nil
-	}
+	return value.array
 }
 
 func (value *Value) GetObject() *map[string]*Value {
-	if value.kind == Object {
-		return value.object
-	} else {
-		return nil
-	}
+	return value.object
 }
 
 type Context struct {
@@ -111,7 +92,6 @@ func (ctx *Context) RemoveWhite() {
 	for i < len(ctx.json) && ctx.json[i] <= ' ' {
 		i++
 	}
-
 	ctx.json = ctx.json[i:]
 }
 
@@ -130,142 +110,85 @@ func (ctx *Context) PeekACharacter() (byte, error) {
 	return ctx.json[0], nil
 }
 
-// 获取""中的字符串,并把slice指向到第二个"的后面的idx
+// 获取""中的字符串
 func (ctx *Context) GetString() (string, error) {
-	if len(ctx.json) < 2 {
-		return "", errors.New("get str error")
+	if err := ctx.RemoveACharacter('"'); err != nil {
+		return "", err
 	}
 
-	first := -1
-	second := -1
+	var buf bytes.Buffer
 	for i := 0; i < len(ctx.json); i++ {
 		if ctx.json[i] == '"' {
-			if first == -1 {
-				first = i
-			} else {
-				if ctx.json[i-1] != '\\' {
-					second = i
-					break
-				}
-			}
+			ctx.json = ctx.json[i+1:]
+			return buf.String(), nil
 		}
-	}
 
-	if first == -1 || second == -1 {
-		return "", errors.New("get str error")
-	}
-
-	// decode utf8
-	var buf bytes.Buffer
-
-	for i := first + 1; i < second; {
 		if ctx.json[i] == '\\' {
 			i++
-			if i >= second {
-				return "", errors.New("too short")
+
+			if i >= len(ctx.json) {
+				break
 			}
 
-			switch ctx.json[i] {
-			case '"':
-				buf.Write([]byte{'"'})
-				i++
-			case '\\':
-				buf.Write([]byte{'\\'})
-				i++
-			case '/':
-				buf.Write([]byte{'/'})
-				i++
-			case 'b':
-				buf.Write([]byte{'\b'})
-				i++
-			case 'f':
-				buf.Write([]byte{'\f'})
-				i++
-			case 'n':
-				buf.Write([]byte{'\n'})
-				i++
-			case 'r':
-				buf.Write([]byte{'\r'})
-				i++
-			case 't':
-				buf.Write([]byte{'\t'})
-				i++
-			case 'u':
-				i++
-				if i+4 > second {
-					return "", errors.New("too short")
+			if ele, ok := Escapee[ctx.json[i]]; ok {
+				buf.Write([]byte{ele})
+			} else if ctx.json[i] == 'u' {
+				if !(i+4 < len(ctx.json)) {
+					break
 				}
-
-				r, err := strconv.ParseUint(ctx.json[i:i+4], 16, 32)
-
+				r, err := strconv.ParseUint(ctx.json[i+1:i+5], 16, 64)
 				if err != nil {
-					return "", err
+					break
 				}
-
-				utf8Buf := make([]byte, 8)
-				n := utf8.EncodeRune(utf8Buf, rune(r))
-				if n < 1 {
-					return "", errors.New("utf8 parse error")
-				}
-				buf.Write(utf8Buf[:n])
-
+				tmp := make([]byte, 8)
+				n := utf8.EncodeRune(tmp, rune(r))
+				buf.Write(tmp[:n])
 				i += 4
-			default:
-				return "", errors.New("error transference symbol")
+			} else {
+				break
 			}
 		} else {
 			buf.Write([]byte{ctx.json[i]})
-			i++
 		}
 	}
 
-	ctx.json = ctx.json[second+1:]
-	return buf.String(), nil
+	return "", errors.New("parse string err")
 }
 
-// 获取指定的字符串,并把slice指向字符串后面的idx
+// 获取指定字符串
 func (ctx *Context) GetWord(s string) (string, error) {
 	if len(ctx.json) < len(s) {
 		return "", errors.New("get str error")
 	}
 	rtn := ctx.json[:len(s)]
-
 	if rtn != s {
 		return "", errors.New("get str error")
 	}
-
 	ctx.json = ctx.json[len(s):]
 	return rtn, nil
 }
 
+// http://www.json.org/string.gif
 func (ctx *Context) ParseString() (*Value, error) {
-	string_, err := ctx.GetString()
-	if err != nil {
+	if string_, err := ctx.GetString(); err != nil {
 		return nil, err
+	} else {
+		return &Value{kind: String, string_: &string_}, nil
 	}
-
-	value := &Value{}
-	value.kind = String
-	value.string_ = &string_
-	return value, nil
 }
 
+// null true false
 func (ctx *Context) ParseWord(specifyStr string, kind Kind) (*Value, error) {
-	_, err := ctx.GetWord(specifyStr)
-
-	if err != nil {
+	if _, err := ctx.GetWord(specifyStr); err != nil {
 		return nil, err
+	} else {
+		return &Value{kind: kind}, nil
 	}
-
-	value := &Value{}
-	value.kind = kind
-	return value, nil
 }
 
 // http://www.json.org/number.gif
 func (ctx *Context) ParseNumber() (*Value, error) {
 	p := 0
-
 	pValid := func() bool { return p < len(ctx.json) }
 
 	if pValid() && ctx.json[p] == '-' {
@@ -278,9 +201,7 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 		if !pValid() || !isDigit1To9(ctx.json[p]) {
 			return nil, errors.New("parse number error")
 		}
-
 		p++
-
 		for pValid() && isDigit(ctx.json[p]) {
 			p++
 		}
@@ -288,13 +209,10 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 
 	if pValid() && ctx.json[p] == '.' {
 		p++
-
 		if !pValid() || !isDigit(ctx.json[p]) {
 			return nil, errors.New("parse number error")
 		}
-
 		p++
-
 		for pValid() && isDigit(ctx.json[p]) {
 			p++
 		}
@@ -302,15 +220,12 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 
 	if pValid() && (ctx.json[p] == 'e' || ctx.json[p] == 'E') {
 		p++
-
 		if pValid() && (ctx.json[p] == '+' || ctx.json[p] == '-') {
 			p++
 		}
-
 		if !pValid() || !isDigit(ctx.json[p]) {
 			return nil, errors.New("parse number error")
 		}
-
 		for pValid() && isDigit(ctx.json[p]) {
 			p++
 		}
@@ -320,23 +235,17 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 	if err != nil {
 		return nil, errors.New("parse number error")
 	}
-
 	ctx.json = ctx.json[p:]
-
-	value := &Value{}
-	value.kind = Number
-	value.number = &number
-	return value, nil
+	return &Value{kind: Number, number: &number}, nil
 }
 
 // http://www.json.org/object.gif
 func (ctx *Context) ParseObject() (*Value, error) {
-	err := ctx.RemoveACharacter('{')
-	if err != nil {
+	if err := ctx.RemoveACharacter('{'); err != nil {
 		return nil, err
 	}
-	value := &Value{kind: Object}
 
+	value := &Value{kind: Object}
 	for {
 		// read key
 		ctx.RemoveWhite()
@@ -347,8 +256,7 @@ func (ctx *Context) ParseObject() (*Value, error) {
 
 		// read colon
 		ctx.RemoveWhite()
-		err = ctx.RemoveACharacter(':')
-		if err != nil {
+		if err = ctx.RemoveACharacter(':'); err != nil {
 			return nil, err
 		}
 
@@ -367,16 +275,14 @@ func (ctx *Context) ParseObject() (*Value, error) {
 
 		// read ,
 		ctx.RemoveWhite()
-		err = ctx.RemoveACharacter(',')
-		if err != nil {
+		if err = ctx.RemoveACharacter(','); err != nil {
 			break
 		}
 	}
 
 	// read }
 	ctx.RemoveWhite()
-	err = ctx.RemoveACharacter('}')
-	if err != nil {
+	if err := ctx.RemoveACharacter('}'); err != nil {
 		return nil, err
 	}
 
@@ -385,8 +291,7 @@ func (ctx *Context) ParseObject() (*Value, error) {
 
 // http://www.json.org/array.gif
 func (ctx *Context) ParseArray() (*Value, error) {
-	err := ctx.RemoveACharacter('[')
-	if err != nil {
+	if err := ctx.RemoveACharacter('['); err != nil {
 		return nil, err
 	}
 
@@ -409,16 +314,14 @@ func (ctx *Context) ParseArray() (*Value, error) {
 
 		// read ,
 		ctx.RemoveWhite()
-		err = ctx.RemoveACharacter(',')
-		if err != nil {
+		if err = ctx.RemoveACharacter(','); err != nil {
 			break
 		}
 	}
 
 	// read ]
 	ctx.RemoveWhite()
-	err = ctx.RemoveACharacter(']')
-	if err != nil {
+	if err := ctx.RemoveACharacter(']'); err != nil {
 		return nil, err
 	}
 
@@ -458,44 +361,36 @@ type Parser struct {
 	value *Value
 }
 
-//  a , a.b , a.b.c  . 是对象的属性
+//  like: "a" , "a.b" , "a.b.c", ""
 func (jp *Parser) Get(key string) *Value {
 	if key == "" {
 		return jp.value
 	}
-
 	// parse
 	a := strings.Split(key, ".")
-
 	if jp.value == nil {
 		return nil
 	}
-
 	value := jp.value
-
 	for _, e := range a {
 		if value.object == nil {
 			return nil
 		}
 
-		nd, ok := (*value.object)[e]
-
-		if !ok {
+		if nd, ok := (*value.object)[e]; !ok {
 			return nil
+		} else {
+			value = nd
 		}
-
-		value = nd
 	}
-
 	return value
 }
 
 func ParseJson(json string) (*Parser, error) {
 	ctx := &Context{json: json}
-	value, err := ctx.ParseValue()
-	if err != nil {
+	if value, err := ctx.ParseValue(); err != nil {
 		return nil, err
+	} else {
+		return &Parser{value: value}, nil
 	}
-	jp := &Parser{value: value}
-	return jp, nil
 }

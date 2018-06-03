@@ -2,17 +2,11 @@ if (typeof MyJson !== "object") {
     MyJson = {};
 }
 
-
 (function () {
     "use script";
 
-    // 当前的character
-    let ch;
-
-    // 当前的character的下标
-    let at;
-
-    // json
+    let ch; // current character
+    let at; // current idx
     let text;
 
     let error = function (m) {
@@ -20,7 +14,7 @@ if (typeof MyJson !== "object") {
         throw {
             name: "SyntaxError",
             message: m,
-            at:at,
+            at: at,
             text: text
         };
     };
