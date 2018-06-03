@@ -161,4 +161,48 @@ func TestSimpleKind(t *testing.T) {
 	if !jp.Get("").GetNull() {
 		t.Fatal("err")
 	}
+
+	json = `true`
+
+	jp, err = ParseJson(json)
+	if jp == nil || err != nil {
+		t.Fatal("err")
+	}
+
+	if !jp.Get("").GetBool() {
+		t.Fatal("err")
+	}
+
+	json = `"shit"`
+
+	jp, err = ParseJson(json)
+	if jp == nil || err != nil {
+		t.Fatal("err")
+	}
+
+	if jp.Get("").GetString() != "shit" {
+		t.Fatal("err")
+	}
+
+	json = `123456`
+
+	jp, err = ParseJson(json)
+	if jp == nil || err != nil {
+		t.Fatal("err")
+	}
+
+	if !isDoubleEqual(jp.Get("").GetNumber(), 123456) {
+		t.Fatal("err")
+	}
+
+	json = `[1,2,3]`
+
+	jp, err = ParseJson(json)
+	if jp == nil || err != nil {
+		t.Fatal("err")
+	}
+
+	if !isDoubleEqual((*jp.Get("").GetArray())[0].GetNumber(), 1) {
+		t.Fatal("err")
+	}
 }

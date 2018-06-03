@@ -120,14 +120,12 @@ func (ctx *Context) RemoveWhite() {
 		}
 	}
 
-	if i < len(ctx.json) {
-		ctx.json = ctx.json[i:]
-	}
+	ctx.json = ctx.json[i:]
 }
 
 // remove一个字符
 func (ctx *Context) RemoveACharacter(c byte) error {
-	if len(ctx.json) < 2 || ctx.json[0] != c {
+	if len(ctx.json) < 1 || ctx.json[0] != c {
 		return errors.New(fmt.Sprintf("err %v", c))
 	}
 
@@ -320,7 +318,7 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 			p++
 		}
 
-		if p >= len(ctx.json) || !isDigit(ctx.json[p]) {
+		if !pValid() || !isDigit(ctx.json[p]) {
 			return nil, errors.New("parse number error")
 		}
 
