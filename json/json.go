@@ -348,8 +348,6 @@ func (ctx *Context) ParseValue() (*Value, error) {
 	default:
 		return ctx.ParseNumber()
 	}
-
-	return nil, errors.New("syntax error")
 }
 
 type Parser struct {

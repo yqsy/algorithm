@@ -34,19 +34,3 @@ object|{...}|{开头|map[string]interface{}
 * 制表符 "\t"
 * 回车符 "\r"
 * 换行符 "\n"
-
-
-我的思路:  
-
-json整体是一个`{}`对象,可以看成一个横向的树  
-
-树可以是空的
-
-这些节点都无法继续生长了
-* null,boolean,string,number
-
-array与object的关键区别是:  
-array的成员是没有key的(成员可以是任意值)  
-object的成员是有key的  
-
-注意:`key` 值只有在object对象中才有
