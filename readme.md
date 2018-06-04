@@ -9,7 +9,7 @@
 
 一些有趣的算法积累
 
-* [soduku](soduku)
+* [sudoku](sudoku)
 * [nqueen](nqueen)
 * [json解析器](json)
 * [repeat_number(数组重复数字)](repeat_number)
