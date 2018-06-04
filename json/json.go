@@ -207,7 +207,6 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 		if !pValid() || !isDigit(ctx.json[p]) {
 			return nil, errors.New("syntax error")
 		}
-		p++
 		for pValid() && isDigit(ctx.json[p]) {
 			p++
 		}

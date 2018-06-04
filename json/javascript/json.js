@@ -105,7 +105,7 @@ jsonParse = function () {
             error("SyntaxError");
         }
 
-        json = json.slice(p + s.length, json.length);
+        p += s.length;
         return rtn;
     };
 
@@ -141,19 +141,34 @@ jsonParse = function () {
             }
         }
 
-        if (jValid() && json[p] === ".") {
+        if (jValid() && json[j] === ".") {
             j++;
             if (!jValid() || !isDigit(json[j])) {
                 error("SyntaxError");
             }
-            j++;
-            if (jValid() && isDigit(json[p])) {
+            while (jValid() && isDigit(json[j])) {
                 j++;
             }
         }
 
-        return parseInt(string.slice(p, j), 10);
+        if (jValid() && (json[j] === 'e' || json[j] === 'E')) {
+            j++;
+            if (jValid() && (json[j] === '+' || json[j] === '-')) {
+                j++
+            }
+            if (!jValid() || !isDigit(json[j])) {
+                error("SyntaxError");
+            }
+            while (jValid() && isDigit(json[j])) {
+                j++;
+            }
+        }
+
+        let str = json.slice(p, j);
+        p = j;
+        return parseFloat(str);
     };
+
 
     let parseObject = function () {
         removeACharacter("{");
@@ -167,9 +182,7 @@ jsonParse = function () {
             removeWhite();
             removeACharacter(":");
 
-            let attribute = parseValue();
-
-            obj[key] = attribute;
+            obj[key] = parseValue();
 
             removeWhite();
             if (peekACharacter() !== ',') {
@@ -192,9 +205,7 @@ jsonParse = function () {
         let array = [];
 
         while (1) {
-            let ele = parseValue();
-
-            array.push(ele);
+            array.push(parseValue());
 
             removeWhite();
             if (peekACharacter() !== ',') {
@@ -244,6 +255,5 @@ jsonParse = function () {
 }();
 
 
-
-
+module.exports = {jsonParse: jsonParse};
 

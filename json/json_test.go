@@ -67,24 +67,7 @@ func TestString(t *testing.T) {
 	checkString("Hello\u0000World", &Context{json: "\"Hello\\u0000World\" "}, t)
 	checkString("\x24", &Context{json: `"\u0024" `}, t)
 	checkString("\xE2\x82\xAC", &Context{json: `"\u20AC" `}, t)
-}
-
-func TestArray(t *testing.T) {
-	jp, err := ParseJson(`{"persons": ["123","456","789"]} `)
-	if jp == nil || err != nil {
-		t.Fatal("err")
-	}
-
-	value := jp.Get("persons")
-	if value == nil {
-		t.Fatal("err")
-	}
-
-	a := value.GetArray()
-
-	if a == nil {
-		t.Fatal("err")
-	}
+	checkString("你好吗", &Context{json: `"你好吗" `}, t)
 }
 
 func TestObject(t *testing.T) {
