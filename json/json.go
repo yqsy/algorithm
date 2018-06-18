@@ -332,14 +332,14 @@ func (ctx *Context) ParseValue() (*Value, error) {
 	}
 
 	switch c {
-	case '"':
-		return ctx.ParseString()
 	case 'n':
 		return ctx.ParseWord("null", Null)
 	case 't':
 		return ctx.ParseWord("true", True)
 	case 'f':
 		return ctx.ParseWord("false", False)
+	case '"':
+		return ctx.ParseString()
 	case '[':
 		return ctx.ParseArray()
 	case '{':
