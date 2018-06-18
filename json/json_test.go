@@ -83,34 +83,34 @@ func TestObject(t *testing.T) {
 "o" : { "1" : 1, "2" : 2, "3" : 3}
 }
 `
-	jp, err := ParseJson(json)
-	if jp == nil || err != nil {
+	value, err := Decode(json)
+	if value == nil || err != nil {
 		t.Fatal("err")
 	}
 
-	if !jp.Get("n").GetNull() {
+	if !value.Get("n").GetNull() {
 		t.Fatal("err")
 	}
 
-	if jp.Get("f").GetBool() {
+	if value.Get("f").GetBool() {
 		t.Fatal("err")
 	}
 
-	if !jp.Get("t").GetBool() {
+	if !value.Get("t").GetBool() {
 		t.Fatal("err")
 	}
 
-	v := jp.Get("i").GetNumber()
+	v := value.Get("i").GetNumber()
 
 	if !isDoubleEqual(v, 123) {
 		t.Fatal("err")
 	}
 
-	if jp.Get("s").GetString() != "abc" {
+	if value.Get("s").GetString() != "abc" {
 		t.Fatal("err")
 	}
 
-	a := jp.Get("a")
+	a := value.Get("a")
 
 	for i := 0; i < 3; i++ {
 		if !isDoubleEqual(a.GetArray()[i].GetNumber(), float64(i+1)) {
@@ -118,7 +118,7 @@ func TestObject(t *testing.T) {
 		}
 	}
 
-	o := jp.Get("o").GetObject()
+	o := value.Get("o").GetObject()
 
 	if !isDoubleEqual(o["3"].GetNumber(), 3) {
 		t.Fatal("err")
@@ -136,56 +136,56 @@ func TestObject(t *testing.T) {
 func TestSimpleKind(t *testing.T) {
 	json := `null`
 
-	jp, err := ParseJson(json)
-	if jp == nil || err != nil {
+	value, err := Decode(json)
+	if value == nil || err != nil {
 		t.Fatal("err")
 	}
 
-	if !jp.Get("").GetNull() {
+	if !value.Get("").GetNull() {
 		t.Fatal("err")
 	}
 
 	json = `true`
 
-	jp, err = ParseJson(json)
-	if jp == nil || err != nil {
+	value, err = Decode(json)
+	if value == nil || err != nil {
 		t.Fatal("err")
 	}
 
-	if !jp.Get("").GetBool() {
+	if !value.Get("").GetBool() {
 		t.Fatal("err")
 	}
 
 	json = `"shit"`
 
-	jp, err = ParseJson(json)
-	if jp == nil || err != nil {
+	value, err = Decode(json)
+	if value == nil || err != nil {
 		t.Fatal("err")
 	}
 
-	if jp.Get("").GetString() != "shit" {
+	if value.Get("").GetString() != "shit" {
 		t.Fatal("err")
 	}
 
 	json = `123456`
 
-	jp, err = ParseJson(json)
-	if jp == nil || err != nil {
+	value, err = Decode(json)
+	if value == nil || err != nil {
 		t.Fatal("err")
 	}
 
-	if !isDoubleEqual(jp.Get("").GetNumber(), 123456) {
+	if !isDoubleEqual(value.Get("").GetNumber(), 123456) {
 		t.Fatal("err")
 	}
 
 	json = `[1,2,3]`
 
-	jp, err = ParseJson(json)
-	if jp == nil || err != nil {
+	value, err = Decode(json)
+	if value == nil || err != nil {
 		t.Fatal("err")
 	}
 
-	if !isDoubleEqual(jp.Get("").GetArray()[0].GetNumber(), 1) {
+	if !isDoubleEqual(value.Get("").GetArray()[0].GetNumber(), 1) {
 		t.Fatal("err")
 	}
 }

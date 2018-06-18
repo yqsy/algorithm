@@ -3,9 +3,9 @@ package json
 import (
 	"errors"
 	"strconv"
-	"strings"
 	"bytes"
 	"unicode/utf8"
+	"strings"
 )
 
 type Kind int
@@ -68,6 +68,37 @@ func (value *Value) GetArray() []*Value {
 
 func (value *Value) GetObject() map[string]*Value {
 	return value.object
+}
+
+//  like: "a" , "a.b" , "a.b.c", ""
+func (value *Value) Get(key string) *Value {
+	if key == "" {
+		return value
+	}
+
+	a := strings.Split(key, ".")
+
+	v := value
+	for _, e := range a {
+		if v.GetObject() == nil {
+			return nil
+		}
+
+		if nd, ok := v.GetObject()[e]; !ok {
+			return nil
+		} else {
+			v = nd
+		}
+	}
+	return v
+}
+
+// TODO Encode
+// TODO Prettify
+
+func Decode(json string) (*Value, error) {
+	ctx := Context{json: json}
+	return ctx.ParseValue()
 }
 
 type Context struct {
@@ -332,43 +363,5 @@ func (ctx *Context) ParseValue() (*Value, error) {
 		return ctx.ParseObject()
 	default:
 		return ctx.ParseNumber()
-	}
-}
-
-type Parser struct {
-	value *Value
-}
-
-//  like: "a" , "a.b" , "a.b.c", ""
-func (jp *Parser) Get(key string) *Value {
-	if key == "" {
-		return jp.value
-	}
-	// parse
-	a := strings.Split(key, ".")
-	if jp.value == nil {
-		return nil
-	}
-	value := jp.value
-	for _, e := range a {
-		if value.object == nil {
-			return nil
-		}
-
-		if nd, ok := value.object[e]; !ok {
-			return nil
-		} else {
-			value = nd
-		}
-	}
-	return value
-}
-
-func ParseJson(json string) (*Parser, error) {
-	ctx := &Context{json: json}
-	if value, err := ctx.ParseValue(); err != nil {
-		return nil, err
-	} else {
-		return &Parser{value: value}, nil
 	}
 }
