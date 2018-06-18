@@ -113,22 +113,22 @@ func TestObject(t *testing.T) {
 	a := jp.Get("a")
 
 	for i := 0; i < 3; i++ {
-		if !isDoubleEqual((*a.GetArray())[i].GetNumber(), float64(i+1)) {
+		if !isDoubleEqual(a.GetArray()[i].GetNumber(), float64(i+1)) {
 			t.Fatal("err")
 		}
 	}
 
 	o := jp.Get("o").GetObject()
 
-	if !isDoubleEqual((*o)["3"].GetNumber(), 3) {
+	if !isDoubleEqual(o["3"].GetNumber(), 3) {
 		t.Fatal("err")
 	}
 
-	if !isDoubleEqual((*o)["2"].GetNumber(), 2) {
+	if !isDoubleEqual(o["2"].GetNumber(), 2) {
 		t.Fatal("err")
 	}
 
-	if !isDoubleEqual((*o)["1"].GetNumber(), 1) {
+	if !isDoubleEqual(o["1"].GetNumber(), 1) {
 		t.Fatal("err")
 	}
 }
@@ -185,8 +185,7 @@ func TestSimpleKind(t *testing.T) {
 		t.Fatal("err")
 	}
 
-	if !isDoubleEqual((*jp.Get("").GetArray())[0].GetNumber(), 1) {
+	if !isDoubleEqual(jp.Get("").GetArray()[0].GetNumber(), 1) {
 		t.Fatal("err")
 	}
-
 }

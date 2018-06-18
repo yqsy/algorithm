@@ -37,13 +37,13 @@ type Value struct {
 	// Null,True,False
 	kind Kind
 
-	string_ *string
+	string_ string
 
-	number *float64
+	number float64
 
-	array *[]*Value
+	array []*Value
 
-	object *map[string]*Value
+	object map[string]*Value
 }
 
 func (value *Value) GetNull() bool {
@@ -55,26 +55,18 @@ func (value *Value) GetBool() bool {
 }
 
 func (value *Value) GetString() string {
-	if value.kind == String || value.string_ != nil {
-		return *value.string_
-	} else {
-		return ""
-	}
+	return value.string_
 }
 
 func (value *Value) GetNumber() float64 {
-	if value.kind == Number {
-		return *value.number
-	} else {
-		return 0.0
-	}
+	return value.number
 }
 
-func (value *Value) GetArray() *[]*Value {
+func (value *Value) GetArray() []*Value {
 	return value.array
 }
 
-func (value *Value) GetObject() *map[string]*Value {
+func (value *Value) GetObject() map[string]*Value {
 	return value.object
 }
 
@@ -168,7 +160,7 @@ func (ctx *Context) ParseString() (*Value, error) {
 	if string_, err := ctx.GetString(); err != nil {
 		return nil, err
 	} else {
-		return &Value{kind: String, string_: &string_}, nil
+		return &Value{kind: String, string_: string_}, nil
 	}
 }
 
@@ -230,7 +222,7 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 		return nil, errors.New("syntax error")
 	}
 	ctx.json = ctx.json[p:]
-	return &Value{kind: Number, number: &number}, nil
+	return &Value{kind: Number, number: number}, nil
 }
 
 // http://www.json.org/object.gif
@@ -263,9 +255,9 @@ func (ctx *Context) ParseObject() (*Value, error) {
 		// save to map
 		if value.object == nil {
 			m := make(map[string]*Value)
-			value.object = &m
+			value.object = m
 		}
-		(*value.object)[key] = attribute
+		value.object[key] = attribute
 
 		// read ,
 		ctx.RemoveWhite()
@@ -298,13 +290,7 @@ func (ctx *Context) ParseArray() (*Value, error) {
 			return nil, err
 		}
 
-		// save to array
-		if value.array == nil {
-			a := make([]*Value, 0)
-			value.array = &a
-		}
-
-		*value.array = append(*value.array, ele)
+		value.array = append(value.array, ele)
 
 		// read ,
 		ctx.RemoveWhite()
@@ -369,7 +355,7 @@ func (jp *Parser) Get(key string) *Value {
 			return nil
 		}
 
-		if nd, ok := (*value.object)[e]; !ok {
+		if nd, ok := value.object[e]; !ok {
 			return nil
 		} else {
 			value = nd
