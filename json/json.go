@@ -259,7 +259,7 @@ func (ctx *Context) ParseObject() (*Value, error) {
 		}
 		value.object[key] = attribute
 
-		// read ,
+		// read , represent have another ele
 		ctx.RemoveWhite()
 		if err = ctx.RemoveACharacter(','); err != nil {
 			break
@@ -292,7 +292,7 @@ func (ctx *Context) ParseArray() (*Value, error) {
 
 		value.array = append(value.array, ele)
 
-		// read ,
+		// read , represent have another ele
 		ctx.RemoveWhite()
 		if err = ctx.RemoveACharacter(','); err != nil {
 			break
