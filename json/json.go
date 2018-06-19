@@ -5,23 +5,12 @@ import (
 	"strconv"
 	"bytes"
 	"unicode/utf8"
-	"strings"
-)
-
-type Kind int
-
-const (
-	Null   Kind = 0
-	True        = 1
-	False       = 2
-	String      = 3
-	Number      = 4
-	Array       = 5
-	Object      = 6
+	"fmt"
 )
 
 var (
 	Escapee = map[byte]byte{'"': '"', '\\': '\\', '/': '/', 'b': '\b', 'f': '\f', 'n': '\n', 'r': '\r', 't': '\t'}
+	BoolMap = map[bool]string{true: "true", false: "false"}
 )
 
 func isDigit1To9(c byte) bool {
@@ -33,70 +22,42 @@ func isDigit(c byte) bool {
 
 }
 
-type Value struct {
-	// Null,True,False
-	kind Kind
-
-	string_ string
-
-	number float64
-
-	array []*Value
-
-	object map[string]*Value
-}
-
-func (value *Value) GetNull() bool {
-	return value.kind == Null
-}
-
-func (value *Value) GetBool() bool {
-	return value.kind == True
-}
-
-func (value *Value) GetString() string {
-	return value.string_
-}
-
-func (value *Value) GetNumber() float64 {
-	return value.number
-}
-
-func (value *Value) GetArray() []*Value {
-	return value.array
-}
-
-func (value *Value) GetObject() map[string]*Value {
-	return value.object
-}
-
-//  like: "a" , "a.b" , "a.b.c", ""
-func (value *Value) Get(key string) *Value {
-	if key == "" {
-		return value
-	}
-
-	a := strings.Split(key, ".")
-
-	v := value
-	for _, e := range a {
-		if v.GetObject() == nil {
-			return nil
+func Encode(v interface{}) string {
+	switch v.(type) {
+	case nil:
+		return "null"
+	case bool:
+		return BoolMap[v.(bool)]
+	case string:
+		return `"` + v.(string) + `"`
+	case float64:
+		return fmt.Sprintf("%v", v.(float64))
+	case []interface{}:
+		a := v.([]interface{})
+		prettify := "["
+		for i := 0; i < len(a); i++ {
+			prettify += Encode(a[i]) + ","
 		}
-
-		if nd, ok := v.GetObject()[e]; !ok {
-			return nil
-		} else {
-			v = nd
+		if len(prettify) > 0 && prettify[len(prettify)-1] == ',' {
+			prettify = prettify[:len(prettify)-1]
 		}
+		return prettify + "]"
+	case map[string]interface{}:
+		o := v.(map[string]interface{})
+		prettify := "{"
+		for k, v := range o {
+			prettify += fmt.Sprintf(`"%v": %v,`, k, Encode(v))
+		}
+		if len(prettify) > 0 && prettify[len(prettify)-1] == ',' {
+			prettify = prettify[:len(prettify)-1]
+		}
+		return prettify + "}"
+	default:
+		panic("only support nil,bool,string,float64,[]interface{} and map[string]interface{}")
 	}
-	return v
 }
 
-// TODO Encode
-// TODO Prettify
-
-func Decode(json string) (*Value, error) {
+func Decode(json string) (interface{}, error) {
 	ctx := Context{json: json}
 	return ctx.ParseValue()
 }
@@ -187,25 +148,21 @@ func (ctx *Context) GetWord(s string) (string, error) {
 }
 
 // http://www.json.org/string.gif
-func (ctx *Context) ParseString() (*Value, error) {
-	if string_, err := ctx.GetString(); err != nil {
-		return nil, err
-	} else {
-		return &Value{kind: String, string_: string_}, nil
-	}
+func (ctx *Context) ParseString() (string, error) {
+	return ctx.GetString()
 }
 
 // null true false
-func (ctx *Context) ParseWord(specifyStr string, kind Kind) (*Value, error) {
+func (ctx *Context) ParseWord(specifyStr string, i interface{}) (interface{}, error) {
 	if _, err := ctx.GetWord(specifyStr); err != nil {
 		return nil, err
 	} else {
-		return &Value{kind: kind}, nil
+		return i, nil
 	}
 }
 
 // http://www.json.org/number.gif
-func (ctx *Context) ParseNumber() (*Value, error) {
+func (ctx *Context) ParseNumber() (float64, error) {
 	p := 0
 	pValid := func() bool { return p < len(ctx.json) }
 
@@ -217,7 +174,7 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 		p++
 	} else {
 		if !pValid() || !isDigit1To9(ctx.json[p]) {
-			return nil, errors.New("syntax error")
+			return 0.0, errors.New("syntax error")
 		}
 		p++
 		for pValid() && isDigit(ctx.json[p]) {
@@ -228,7 +185,7 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 	if pValid() && ctx.json[p] == '.' {
 		p++
 		if !pValid() || !isDigit(ctx.json[p]) {
-			return nil, errors.New("syntax error")
+			return 0.0, errors.New("syntax error")
 		}
 		for pValid() && isDigit(ctx.json[p]) {
 			p++
@@ -241,7 +198,7 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 			p++
 		}
 		if !pValid() || !isDigit(ctx.json[p]) {
-			return nil, errors.New("syntax error")
+			return 0.0, errors.New("syntax error")
 		}
 		for pValid() && isDigit(ctx.json[p]) {
 			p++
@@ -250,19 +207,52 @@ func (ctx *Context) ParseNumber() (*Value, error) {
 
 	number, err := strconv.ParseFloat(ctx.json[:p], 64)
 	if err != nil {
-		return nil, errors.New("syntax error")
+		return 0.0, errors.New("syntax error")
 	}
 	ctx.json = ctx.json[p:]
-	return &Value{kind: Number, number: number}, nil
+	return number, nil
+}
+
+// http://www.json.org/array.gif
+func (ctx *Context) ParseArray() ([]interface{}, error) {
+	if err := ctx.RemoveACharacter('['); err != nil {
+		return nil, err
+	}
+
+	a := make([]interface{}, 0)
+
+	for {
+		// dispatch
+		ele, err := ctx.ParseValue()
+		if err != nil {
+			return nil, err
+		}
+
+		a = append(a, ele)
+
+		// read , represent have another ele
+		ctx.RemoveWhite()
+		if err = ctx.RemoveACharacter(','); err != nil {
+			break
+		}
+	}
+
+	// read ]
+	ctx.RemoveWhite()
+	if err := ctx.RemoveACharacter(']'); err != nil {
+		return nil, err
+	}
+
+	return a, nil
 }
 
 // http://www.json.org/object.gif
-func (ctx *Context) ParseObject() (*Value, error) {
+func (ctx *Context) ParseObject() (map[string]interface{}, error) {
 	if err := ctx.RemoveACharacter('{'); err != nil {
 		return nil, err
 	}
 
-	value := &Value{kind: Object}
+	o := make(map[string]interface{})
 	for {
 		// read key
 		ctx.RemoveWhite()
@@ -284,11 +274,7 @@ func (ctx *Context) ParseObject() (*Value, error) {
 		}
 
 		// save to map
-		if value.object == nil {
-			m := make(map[string]*Value)
-			value.object = m
-		}
-		value.object[key] = attribute
+		o[key] = attribute
 
 		// read , represent have another ele
 		ctx.RemoveWhite()
@@ -303,44 +289,11 @@ func (ctx *Context) ParseObject() (*Value, error) {
 		return nil, err
 	}
 
-	return value, nil
-}
-
-// http://www.json.org/array.gif
-func (ctx *Context) ParseArray() (*Value, error) {
-	if err := ctx.RemoveACharacter('['); err != nil {
-		return nil, err
-	}
-
-	value := &Value{kind: Array}
-
-	for {
-		// dispatch
-		ele, err := ctx.ParseValue()
-		if err != nil {
-			return nil, err
-		}
-
-		value.array = append(value.array, ele)
-
-		// read , represent have another ele
-		ctx.RemoveWhite()
-		if err = ctx.RemoveACharacter(','); err != nil {
-			break
-		}
-	}
-
-	// read ]
-	ctx.RemoveWhite()
-	if err := ctx.RemoveACharacter(']'); err != nil {
-		return nil, err
-	}
-
-	return value, nil
+	return o, nil
 }
 
 // http://www.json.org/value.gif
-func (ctx *Context) ParseValue() (*Value, error) {
+func (ctx *Context) ParseValue() (interface{}, error) {
 	ctx.RemoveWhite()
 
 	c, err := ctx.PeekACharacter()
@@ -350,11 +303,11 @@ func (ctx *Context) ParseValue() (*Value, error) {
 
 	switch c {
 	case 'n':
-		return ctx.ParseWord("null", Null)
+		return ctx.ParseWord("null", nil)
 	case 't':
-		return ctx.ParseWord("true", True)
+		return ctx.ParseWord("true", true)
 	case 'f':
-		return ctx.ParseWord("false", False)
+		return ctx.ParseWord("false", false)
 	case '"':
 		return ctx.ParseString()
 	case '[':

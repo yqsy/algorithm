@@ -13,7 +13,7 @@ func isDoubleEqual(f1, f2 float64) bool {
 
 func checkNumber(v float64, ctx *Context, t *testing.T) {
 	node, err := ctx.ParseNumber()
-	if err != nil || !isDoubleEqual(node.GetNumber(), v) {
+	if err != nil || !isDoubleEqual(node, v) {
 		t.Fatal(fmt.Sprintf("err : %v", ctx.json))
 	}
 }
@@ -54,7 +54,7 @@ func TestNumber(t *testing.T) {
 
 func checkString(v string, ctx *Context, t *testing.T) {
 	value, err := ctx.ParseString()
-	if err != nil || value.GetString() != v {
+	if err != nil || value != v {
 		t.Fatal(fmt.Sprintf("err : %v", ctx.json))
 	}
 }
@@ -88,60 +88,58 @@ func TestObject(t *testing.T) {
 		t.Fatal("err")
 	}
 
-	if !value.Get("n").GetNull() {
+	if value.(map[string]interface{})["n"] != nil {
 		t.Fatal("err")
 	}
 
-	if value.Get("f").GetBool() {
+	if value.(map[string]interface{})["f"].(bool) {
 		t.Fatal("err")
 	}
 
-	if !value.Get("t").GetBool() {
+	if !value.(map[string]interface{})["t"].(bool) {
 		t.Fatal("err")
 	}
 
-	v := value.Get("i").GetNumber()
+	v := value.(map[string]interface{})["i"].(float64)
 
 	if !isDoubleEqual(v, 123) {
 		t.Fatal("err")
 	}
 
-	if value.Get("s").GetString() != "abc" {
+	if value.(map[string]interface{})["s"].(string) != "abc" {
 		t.Fatal("err")
 	}
 
-	a := value.Get("a")
+	a := value.(map[string]interface{})["a"].([]interface{})
 
 	for i := 0; i < 3; i++ {
-		if !isDoubleEqual(a.GetArray()[i].GetNumber(), float64(i+1)) {
+		if !isDoubleEqual(a[i].(float64), float64(i+1)) {
 			t.Fatal("err")
 		}
 	}
 
-	o := value.Get("o").GetObject()
+	o := value.(map[string]interface{})["o"].(map[string]interface{})
 
-	if !isDoubleEqual(o["3"].GetNumber(), 3) {
+	if !isDoubleEqual(o["3"].(float64), 3) {
 		t.Fatal("err")
 	}
 
-	if !isDoubleEqual(o["2"].GetNumber(), 2) {
+	if !isDoubleEqual(o["2"].(float64), 2) {
 		t.Fatal("err")
 	}
 
-	if !isDoubleEqual(o["1"].GetNumber(), 1) {
+	if !isDoubleEqual(o["1"].(float64), 1) {
 		t.Fatal("err")
 	}
+
+	fmt.Println(Encode(value))
 }
 
 func TestSimpleKind(t *testing.T) {
 	json := `null`
 
 	value, err := Decode(json)
-	if value == nil || err != nil {
-		t.Fatal("err")
-	}
-
-	if !value.Get("").GetNull() {
+	if value != nil || err != nil {
 		t.Fatal("err")
 	}
 
@@ -152,7 +150,7 @@ func TestSimpleKind(t *testing.T) {
 		t.Fatal("err")
 	}
 
-	if !value.Get("").GetBool() {
+	if !value.(bool) {
 		t.Fatal("err")
 	}
 
@@ -163,7 +161,7 @@ func TestSimpleKind(t *testing.T) {
 		t.Fatal("err")
 	}
 
-	if value.Get("").GetString() != "shit" {
+	if value.(string) != "shit" {
 		t.Fatal("err")
 	}
 
@@ -174,7 +172,7 @@ func TestSimpleKind(t *testing.T) {
 		t.Fatal("err")
 	}
 
-	if !isDoubleEqual(value.Get("").GetNumber(), 123456) {
+	if !isDoubleEqual(value.(float64), 123456) {
 		t.Fatal("err")
 	}
 
@@ -185,7 +183,7 @@ func TestSimpleKind(t *testing.T) {
 		t.Fatal("err")
 	}
 
-	if !isDoubleEqual(value.Get("").GetArray()[0].GetNumber(), 1) {
+	if !isDoubleEqual(value.([]interface{})[0].(float64), 1) {
 		t.Fatal("err")
 	}
 }
