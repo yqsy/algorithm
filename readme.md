@@ -23,3 +23,8 @@
 * [heap(堆)](heap)
 * [rotatemin(旋转数组的最小数字)](rotatemin)
 * [binarysearch(二分查找)](binarysearch)
+* [avl tree](avltree)
+* [rb tree](rbtree)
+* [trie tree](trietree)
+* [b tree](btree)
+* [b+ tree](bplustree)
