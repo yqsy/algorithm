@@ -69,12 +69,12 @@ func TestNextNode(t *testing.T) {
 
 	node := binaryTree.FindNode(5)
 
-	fmt.Println(node.data)
+	fmt.Println(node.key)
 
 	nextNode := binaryTree.NextInfixNode(node)
 
 	if nextNode != nil {
-		fmt.Println(nextNode.data)
+		fmt.Println(nextNode.key)
 	}
 
 }

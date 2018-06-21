@@ -6,18 +6,17 @@ import (
 )
 
 type Node struct {
-	data  int
-	left  *Node
-	right *Node
+	key         int
+	left, right *Node
 }
 
-func NewNode(data int) *Node {
-	return &Node{data: data}
+func NewNode(key int) *Node {
+	return &Node{key: key}
 }
 
 // 前序
 func (node *Node) PreOrder(out *[]int) {
-	*out = append(*out, node.data)
+	*out = append(*out, node.key)
 	if node.left != nil {
 		node.left.PreOrder(out)
 	}
@@ -33,7 +32,7 @@ func (node *Node) InfixOrder(out *[]int) {
 		node.left.InfixOrder(out)
 	}
 
-	*out = append(*out, node.data)
+	*out = append(*out, node.key)
 
 	if node.right != nil {
 		node.right.InfixOrder(out)
@@ -50,7 +49,7 @@ func (node *Node) PostOrder(out *[]int) {
 		node.right.PostOrder(out)
 	}
 
-	*out = append(*out, node.data)
+	*out = append(*out, node.key)
 }
 
 // 数组中查找index
@@ -118,7 +117,7 @@ func (binaryTree *BinaryTree) PreOrderStack() []int {
 	for ; s.Len() > 0; {
 
 		node := s.Pop().(*Node)
-		out = append(out, node.data)
+		out = append(out, node.key)
 
 		if node.right != nil {
 			s.Push(node.right)
@@ -153,7 +152,7 @@ func (binaryTree *BinaryTree) InfixOrderStack() []int {
 		}
 
 		popNode := s.Pop().(*Node)
-		out = append(out, popNode.data)
+		out = append(out, popNode.key)
 		if popNode.right != nil {
 			node = popNode.right
 		}
@@ -175,7 +174,7 @@ func (binaryTree *BinaryTree) PostOrderStack() []int {
 	for ; s.Len() > 0; {
 
 		node := s.Pop().(*Node)
-		out = append(out, node.data)
+		out = append(out, node.key)
 
 		if node.left != nil {
 			s.Push(node.left)
@@ -248,7 +247,7 @@ func (binaryTree *BinaryTree) AllLayer() [][]int {
 		var oneRow []int
 		for i := 0; i < currentRowLen; i++ {
 			node := s.Dequeue().(*Node)
-			oneRow = append(oneRow, node.data)
+			oneRow = append(oneRow, node.key)
 			l, r := node.left, node.right
 			if l != nil {
 				s.Enqueue(l)
@@ -284,7 +283,7 @@ func (binaryTree *BinaryTree) Serialize() []int {
 
 		for i := 0; i < currentRowLen; i++ {
 			node := s.Dequeue().(*Node)
-			serialized = append(serialized, node.data)
+			serialized = append(serialized, node.key)
 			l, r := node.left, node.right
 			if l != nil {
 				s.Enqueue(l)
@@ -300,7 +299,7 @@ func (binaryTree *BinaryTree) Serialize() []int {
 }
 
 // 寻找node (前序)
-func (binaryTree *BinaryTree) FindNode(data int) *Node {
+func (binaryTree *BinaryTree) FindNode(key int) *Node {
 	if binaryTree.head == nil {
 		return nil
 	}
@@ -313,7 +312,7 @@ func (binaryTree *BinaryTree) FindNode(data int) *Node {
 
 		node := s.Pop().(*Node)
 
-		if node.data == data {
+		if node.key == key {
 			out = node
 		}
 
