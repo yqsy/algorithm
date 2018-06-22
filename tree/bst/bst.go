@@ -35,7 +35,12 @@ func (bst *BST) Size() int {
 }
 
 func (bst *BST) Get(key string) (string, bool) {
-	return bst.getNode(bst.head, key)
+	node := bst.getNode(bst.head, key)
+	if node != nil {
+		return node.value, true
+	} else {
+		return "", false
+	}
 }
 
 func (bst *BST) Put(key, value string) {
@@ -44,27 +49,52 @@ func (bst *BST) Put(key, value string) {
 
 // 最小key
 func (bst *BST) Min() (string, bool) {
-	return bst.minNode(bst.head)
+	minNode := bst.minNode(bst.head)
+	if minNode != nil {
+		return minNode.key, true
+	} else {
+		return "", false
+	}
 }
 
 // 最大key
 func (bst *BST) Max() (string, bool) {
-	return bst.maxNode(bst.head)
+	maxNode := bst.maxNode(bst.head)
+	if maxNode != nil {
+		return maxNode.key, true
+	} else {
+		return "", false
+	}
 }
 
 // 向下取整(寻找<=key的最大key)
 func (bst *BST) Floor(key string) (string, bool) {
-	return bst.floorNode(bst.head, key)
+	floorNode := bst.floorNode(bst.head, key)
+	if floorNode != nil {
+		return floorNode.key, true
+	} else {
+		return "", false
+	}
 }
 
 // 向上取整(寻找>=key的最小key)
 func (bst *BST) Ceiling(key string) (string, bool) {
-	return bst.ceilingNode(bst.head, key)
+	ceilingNode := bst.ceilingNode(bst.head, key)
+	if ceilingNode != nil {
+		return ceilingNode.key, true
+	} else {
+		return "", false
+	}
 }
 
 // 返回排名为k的节点, 排名范围[0,k]
 func (bst *BST) Select(k int) (string, bool) {
-	return bst.selectNode(bst.head, k)
+	selectNode := bst.selectNode(bst.head, k)
+	if selectNode != nil {
+		return selectNode.key, true
+	} else {
+		return "", false
+	}
 }
 
 // 返回 < key 的键的数量
@@ -80,6 +110,18 @@ func (bst *BST) DeleteMin() {
 // 删除最大键
 func (bst *BST) DeleteMax() {
 	bst.head = bst.deleteMaxNode(bst.head)
+}
+
+// 删除键
+func (bst *BST) Delete(key string) {
+	bst.head = bst.deleteNode(bst.head, key)
+}
+
+// 范围查找
+func (bst *BST) Keys(lo, hi string) []string {
+	var result []string
+	bst.keysNode(bst.head, &result, lo, hi)
+	return result
 }
 
 func (bst *BST) putNode(node *Node, key, value string) *Node {
@@ -98,9 +140,9 @@ func (bst *BST) putNode(node *Node, key, value string) *Node {
 	return node
 }
 
-func (bst *BST) getNode(node *Node, key string) (string, bool) {
+func (bst *BST) getNode(node *Node, key string) *Node {
 	if node == nil {
-		return "", false
+		return nil
 	}
 
 	if key < node.key {
@@ -108,79 +150,79 @@ func (bst *BST) getNode(node *Node, key string) (string, bool) {
 	} else if key > node.key {
 		return bst.getNode(node.right, key)
 	} else {
-		return node.value, true
+		return node
 	}
 }
 
-func (bst *BST) minNode(node *Node) (string, bool) {
+func (bst *BST) minNode(node *Node) (*Node) {
 	if node == nil {
-		return "", false
+		return nil
 	}
 
 	if node.left == nil {
-		return node.key, true
+		return node
 	} else {
 		return bst.minNode(node.left)
 	}
 }
 
-func (bst *BST) maxNode(node *Node) (string, bool) {
+func (bst *BST) maxNode(node *Node) *Node {
 	if node == nil {
-		return "", false
+		return nil
 	}
 
 	if node.right == nil {
-		return node.key, true
+		return node
 	} else {
 		return bst.maxNode(node.right)
 	}
 }
 
-func (bst *BST) floorNode(node *Node, key string) (string, bool) {
+func (bst *BST) floorNode(node *Node, key string) *Node {
 	if node == nil {
-		return "", false
+		return nil
 	}
 
 	if node.key == key {
-		return node.key, true
+		return node
 	} else if node.key < key {
 		// is current largest?
-		if moreKey, ok := bst.floorNode(node.right, key); ok {
-			return moreKey, true
+		if moreNode := bst.floorNode(node.right, key); moreNode != nil {
+			return moreNode
 		} else {
-			return node.key, true
+			return node
 		}
 	} else {
 		return bst.floorNode(node.left, key)
 	}
 }
 
-func (bst *BST) ceilingNode(node *Node, key string) (string, bool) {
+func (bst *BST) ceilingNode(node *Node, key string) *Node {
 	if node == nil {
-		return "", false
+		return nil
 	}
 
 	if node.key == key {
-		return node.key, true
+		return node
 	} else if node.key < key {
-		return bst.floorNode(node.right, key)
+		return bst.ceilingNode(node.right, key)
 	} else {
 		// is current smallest?
-		if moreKey, ok := bst.floorNode(node.left, key); ok {
-			return moreKey, true
+		if moreNode := bst.ceilingNode(node.left, key); moreNode != nil {
+			return moreNode
 		} else {
-			return node.key, true
+			return node
 		}
 	}
 }
 
-func (bst *BST) selectNode(node *Node, k int) (string, bool) {
+func (bst *BST) selectNode(node *Node, k int) *Node {
 	if node == nil {
-		return "", false
+		return nil
 	}
 
 	if bst.NodeSize(node.left) == k {
-		return node.key, true
+		return node
 	} else if bst.NodeSize(node.left) > k {
 		return bst.selectNode(node.left, k)
 	} else {
@@ -228,5 +270,48 @@ func (bst *BST) deleteMaxNode(node *Node) *Node {
 		node.right = bst.deleteMaxNode(node.right)
 		node.n = bst.NodeSize(node.left) + bst.NodeSize(node.right) + 1
 		return node
+	}
+}
+
+func (bst *BST) deleteNode(node *Node, key string) *Node {
+	if node == nil {
+		return nil
+	}
+
+	if key > node.key {
+		node.right = bst.deleteNode(node.right, key)
+	} else if key < node.key {
+		node.left = bst.deleteNode(node.left, key)
+	} else {
+		if node.left == nil {
+			return node.right
+		} else if node.right == nil {
+			return node.left
+		}
+		min := bst.minNode(node.right)
+		min.left = node.left
+		min.right = bst.deleteMinNode(node.right)
+		node = min
+	}
+
+	node.n = bst.NodeSize(node.left) + bst.NodeSize(node.right) + 1
+	return node
+}
+
+func (bst *BST) keysNode(node *Node, result *[]string, lo, hi string) {
+	if node == nil {
+		return
+	}
+
+	if lo < node.key {
+		bst.keysNode(node.left, result, lo, hi)
+	}
+
+	if lo <= node.key && node.key <= hi {
+		*result = append(*result, node.key)
+	}
+
+	if hi > node.key {
+		bst.keysNode(node.right, result, lo, hi)
 	}
 }
