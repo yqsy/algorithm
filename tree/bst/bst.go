@@ -67,9 +67,19 @@ func (bst *BST) Select(k int) (string, bool) {
 	return bst.selectNode(bst.head, k)
 }
 
-// 返回 <= key 的键的数量
+// 返回 < key 的键的数量
 func (bst *BST) Rank(key string) (int, bool) {
 	return bst.rankNode(bst.head, key)
+}
+
+// 删除最小键
+func (bst *BST) DeleteMin() {
+	bst.head = bst.deleteMinNode(bst.head)
+}
+
+// 删除最大键
+func (bst *BST) DeleteMax() {
+	bst.head = bst.deleteMaxNode(bst.head)
 }
 
 func (bst *BST) putNode(node *Node, key, value string) *Node {
@@ -190,5 +200,33 @@ func (bst *BST) rankNode(node *Node, key string) (int, bool) {
 	} else {
 		moreRank, _ := bst.rankNode(node.right, key)
 		return 1 + bst.NodeSize(node.left) + moreRank, true
+	}
+}
+
+func (bst *BST) deleteMinNode(node *Node) *Node {
+	if node == nil {
+		return nil
+	}
+
+	if node.left == nil {
+		return node.right
+	} else {
+		node.left = bst.deleteMinNode(node.left)
+		node.n = bst.NodeSize(node.left) + bst.NodeSize(node.right) + 1
+		return node
+	}
+}
+
+func (bst *BST) deleteMaxNode(node *Node) *Node {
+	if node == nil {
+		return nil
+	}
+
+	if node.right == nil {
+		return node.left
+	} else {
+		node.right = bst.deleteMaxNode(node.right)
+		node.n = bst.NodeSize(node.left) + bst.NodeSize(node.right) + 1
+		return node
 	}
 }
