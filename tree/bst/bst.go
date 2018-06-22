@@ -18,6 +18,10 @@ type BST struct {
 	head *Node
 }
 
+func (bst *BST) Depth() int {
+	return bst.depth(bst.head)
+}
+
 func (bst *BST) NodeSize(node *Node) int {
 	if node == nil {
 		return 0
@@ -122,6 +126,20 @@ func (bst *BST) Keys(lo, hi string) []string {
 	var result []string
 	bst.keysNode(bst.head, &result, lo, hi)
 	return result
+}
+
+func (bst *BST) depth(node *Node) int {
+	if node == nil {
+		return 0
+	}
+
+	ldepth := bst.depth(node.left)
+	rdepth := bst.depth(node.right)
+	if ldepth > rdepth {
+		return ldepth + 1
+	} else {
+		return rdepth + 1
+	}
 }
 
 func (bst *BST) putNode(node *Node, key, value string) *Node {

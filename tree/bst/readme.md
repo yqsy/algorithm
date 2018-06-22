@@ -30,7 +30,7 @@
 * keys 范围查找
 
 额外:
-* 树的高度 max(最小键,最大键)
+* 树的高度和深度 // https://stackoverflow.com/questions/2603692/what-is-the-difference-between-tree-depth-and-height
 * 打印树 
 
 <a id="markdown-2-取整的思考方法" name="2-取整的思考方法"></a>
