@@ -1,5 +1,7 @@
 package bst
 
+import "github.com/golang-collections/collections/queue"
+
 type Node struct {
 	key   string
 	value string
@@ -16,6 +18,11 @@ func NewNode(key string, value string) *Node {
 
 type BST struct {
 	head *Node
+}
+
+// 利用队列层次遍历,打印树
+func (bst *BST) Prettify() string {
+	return bst.prettifyNode(bst.head)
 }
 
 func (bst *BST) Depth() int {
@@ -126,6 +133,39 @@ func (bst *BST) Keys(lo, hi string) []string {
 	var result []string
 	bst.keysNode(bst.head, &result, lo, hi)
 	return result
+}
+
+func (bst *BST) prettifyNode(node *Node) string {
+	if node == nil {
+		return ""
+	}
+
+	q := queue.New()
+	q.Enqueue(node)
+
+	s := ""
+	for {
+		if q.Len() < 1 {
+			break
+		}
+
+		cur := q.Dequeue().(*Node)
+		if cur == nil {
+			s += "*"
+			continue
+		}
+
+		s += cur.key
+
+		if cur.left != nil {
+			q.Enqueue(cur.left)
+		}
+
+		if cur.right != nil {
+			q.Enqueue(cur.right)
+		}
+	}
+	return s
 }
 
 func (bst *BST) depth(node *Node) int {
