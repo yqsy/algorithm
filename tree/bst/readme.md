@@ -20,17 +20,21 @@
 * put 插入
 * min 最小键
 * max 最大键
-* floor 向下取整
-* ceiling 向上取整
-* select 查找排名为k的键
-* rank 返回键的排名
+* floor 向下取整 (寻找<=key的最大key)
+* ceiling 向上取整 (寻找>=key的最小key)
+* select 查找排名为k的键  (排名范围[0,k])
+* rank 返回键的排名 (返回 < key 的键的数量)
 * delete 删除键
 * deleteMin 删除最小键 
 * deleteMax 删除最大键
 * keys 范围查找
 
 额外:  
-深度和高度: https://stackoverflow.com/questions/2603692/what-is-the-difference-between-tree-depth-and-height
+深度和高度:  
+https://stackoverflow.com/questions/2603692/what-is-the-difference-between-tree-depth-and-height
+
+打印bst:  
+https://stackoverflow.com/questions/4965335/how-to-print-binary-tree-diagram
 * 树的高度和深度 
 * 打印树 
 

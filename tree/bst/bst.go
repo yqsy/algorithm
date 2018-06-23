@@ -1,6 +1,6 @@
 package bst
 
-import "github.com/golang-collections/collections/queue"
+import "math"
 
 type Node struct {
 	key   string
@@ -12,8 +12,31 @@ type Node struct {
 	n int
 }
 
-func NewNode(key string, value string) *Node {
-	return &Node{key: key, value: value}
+func maxInt(a, b int) int {
+	if a > b {
+		return a
+	} else {
+		return b
+	}
+}
+
+func addSpaces(n int, s *string) {
+	for i := 0; i < n; i++ {
+		*s += " "
+	}
+}
+
+func isAllNodesNil(nodes []*Node) bool {
+	for _, val := range nodes {
+		if val != nil {
+			return false
+		}
+	}
+	return true
+}
+
+func NewNode(key string, value string, n int) *Node {
+	return &Node{key: key, value: value, n : n}
 }
 
 type BST struct {
@@ -22,7 +45,11 @@ type BST struct {
 
 // 利用队列层次遍历,打印树
 func (bst *BST) Prettify() string {
-	return bst.prettifyNode(bst.head)
+	nodes := []*Node{bst.head}
+	dep := bst.Depth()
+	s := ""
+	bst.prettifyNode(nodes, 1, dep, &s)
+	return s
 }
 
 func (bst *BST) Depth() int {
@@ -135,56 +162,78 @@ func (bst *BST) Keys(lo, hi string) []string {
 	return result
 }
 
-func (bst *BST) prettifyNode(node *Node) string {
-	if node == nil {
-		return ""
+func (bst *BST) prettifyNode(nodes []*Node, level, maxLevel int, s *string) {
+	if len(nodes) < 1 || isAllNodesNil(nodes) {
+		return
 	}
 
-	q := queue.New()
-	q.Enqueue(node)
+	floor := maxLevel - level
+	endgeLines := int(math.Pow(2, math.Max(float64(floor-1), 0)))
+	firstSpaces := int(math.Pow(2, float64(floor))) - 1
+	betweenSpaces := int(math.Pow(2, float64(floor+1))) - 1
 
-	s := ""
-	for {
-		if q.Len() < 1 {
-			break
+	addSpaces(firstSpaces, s)
+
+	var newNodes []*Node
+	for _, node := range nodes {
+		if node != nil {
+			newNodes = append(newNodes, node.left)
+			newNodes = append(newNodes, node.right)
+			*s += node.key
+		} else {
+			newNodes = append(newNodes, (*Node)(nil))
+			newNodes = append(newNodes, (*Node)(nil))
+			*s += " "
 		}
-
-		cur := q.Dequeue().(*Node)
-		if cur == nil {
-			s += "*"
-			continue
-		}
-
-		s += cur.key
-
-		if cur.left != nil {
-			q.Enqueue(cur.left)
-		}
-
-		if cur.right != nil {
-			q.Enqueue(cur.right)
-		}
+		addSpaces(betweenSpaces, s)
 	}
-	return s
+
+	*s += "\n"
+	// 画 / \ 树枝
+
+	for i := 1; i <= endgeLines; i++ {
+		for j := 0; j < len(nodes); j++ {
+			addSpaces(firstSpaces-i, s)
+			if nodes[j] == nil {
+				addSpaces(endgeLines+endgeLines+i+1, s)
+				continue
+			}
+
+			if nodes[j].left != nil {
+				*s += "/"
+			} else {
+				*s += " "
+			}
+
+			addSpaces(i+i-1, s)
+
+			if nodes[j].right != nil {
+				*s += "\\"
+			} else {
+				*s += " "
+			}
+
+			addSpaces(endgeLines+endgeLines-i, s)
+		}
+
+		*s += "\n"
+	}
+
+	bst.prettifyNode(newNodes, level+1, maxLevel, s)
 }
 
 func (bst *BST) depth(node *Node) int {
 	if node == nil {
 		return 0
 	}
-
-	ldepth := bst.depth(node.left)
-	rdepth := bst.depth(node.right)
-	if ldepth > rdepth {
-		return ldepth + 1
-	} else {
-		return rdepth + 1
-	}
+	ld := bst.depth(node.left)
+	rd := bst.depth(node.right)
+	return maxInt(ld, rd) + 1
 }
 
 func (bst *BST) putNode(node *Node, key, value string) *Node {
 	if node == nil {
-		return NewNode(key, value)
+		return NewNode(key, value, 1)
 	}
 
 	if key < node.key {
@@ -194,7 +243,7 @@ func (bst *BST) putNode(node *Node, key, value string) *Node {
 	} else {
 		node.value = value
 	}
-
+	node.n = bst.NodeSize(node.left) + bst.NodeSize(node.right) + 1
 	return node
 }
 
