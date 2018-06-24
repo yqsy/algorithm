@@ -22,6 +22,7 @@
 * [heap(堆)](heap)
 * [rotatemin(旋转数组的最小数字)](rotatemin)
 * [binarysearch(二分查找)](binarysearch)
+* [leetcode-4-Median of Two Sorted Arrays](MedianofTwoSortedArrays)
 
 树
 * [binarytree(二叉树)](tree/binarytree)
