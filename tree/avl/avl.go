@@ -3,10 +3,11 @@ package avl
 import (
 	"math"
 	"github.com/yqsy/algorithm/tree/common"
+	"strconv"
 )
 
 type Node struct {
-	key   string
+	key   int
 	value string
 
 	left, right *Node
@@ -15,7 +16,7 @@ type Node struct {
 	height int
 }
 
-func NewNode(key string, value string, height int) *Node {
+func NewNode(key int, value string, height int) *Node {
 	return &Node{key: key, value: value, height: height}
 }
 
@@ -44,7 +45,7 @@ func (avl *AVL) Prettify() string {
 	return s
 }
 
-func (avl *AVL) Get(key string) (string, bool) {
+func (avl *AVL) Get(key int) (string, bool) {
 	node := avl.getNode(avl.head, key)
 	if node != nil {
 		return node.value, true
@@ -53,11 +54,11 @@ func (avl *AVL) Get(key string) (string, bool) {
 	}
 }
 
-func (avl *AVL) Put(key, value string) {
+func (avl *AVL) Put(key int, value string) {
 	avl.head = avl.putNode(avl.head, key, value)
 }
 
-func (avl *AVL) Delete(key string) {
+func (avl *AVL) Delete(key int) {
 	avl.head = avl.deleteNode(avl.head, key)
 }
 
@@ -89,7 +90,7 @@ func (avl *AVL) calcNodeHeight(node *Node) int {
 	return common.MaxInt(ld, rd) + 1
 }
 
-func (avl *AVL) getNode(node *Node, key string) *Node {
+func (avl *AVL) getNode(node *Node, key int) *Node {
 	if node == nil {
 		return nil
 	}
@@ -103,7 +104,7 @@ func (avl *AVL) getNode(node *Node, key string) *Node {
 	}
 }
 
-func (avl *AVL) putNode(node *Node, key, value string) *Node {
+func (avl *AVL) putNode(node *Node, key int, value string) *Node {
 	if node == nil {
 		return NewNode(key, value, 1)
 	}
@@ -133,7 +134,7 @@ func (avl *AVL) deleteMinNode(node *Node) *Node {
 	}
 }
 
-func (avl *AVL) deleteNode(node *Node, key string) *Node {
+func (avl *AVL) deleteNode(node *Node, key int) *Node {
 	if node == nil {
 		return nil
 	}
@@ -230,7 +231,7 @@ func (avl *AVL) prettifyNode(nodes []*Node, level, maxLevel int, s *string) {
 		if node != nil {
 			newNodes = append(newNodes, node.left)
 			newNodes = append(newNodes, node.right)
-			*s += node.key
+			*s += strconv.Itoa(node.key)
 		} else {
 			newNodes = append(newNodes, (*Node)(nil))
 			newNodes = append(newNodes, (*Node)(nil))

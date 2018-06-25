@@ -3,10 +3,11 @@ package bst
 import (
 	"math"
 	"github.com/yqsy/algorithm/tree/common"
+	"strconv"
 )
 
 type Node struct {
-	key   string
+	key   int
 	value string
 
 	left, right *Node
@@ -24,7 +25,7 @@ func isAllNodesNil(nodes []*Node) bool {
 	return true
 }
 
-func NewNode(key string, value string, n int) *Node {
+func NewNode(key int, value string, n int) *Node {
 	return &Node{key: key, value: value, n: n}
 }
 
@@ -65,7 +66,7 @@ func (bst *BST) Size() int {
 	}
 }
 
-func (bst *BST) Get(key string) (string, bool) {
+func (bst *BST) Get(key int) (string, bool) {
 	node := bst.getNode(bst.head, key)
 	if node != nil {
 		return node.value, true
@@ -74,62 +75,62 @@ func (bst *BST) Get(key string) (string, bool) {
 	}
 }
 
-func (bst *BST) Put(key, value string) {
+func (bst *BST) Put(key int, value string) {
 	bst.head = bst.putNode(bst.head, key, value)
 }
 
 // 最小key
-func (bst *BST) Min() (string, bool) {
+func (bst *BST) Min() (int, bool) {
 	minNode := bst.minNode(bst.head)
 	if minNode != nil {
 		return minNode.key, true
 	} else {
-		return "", false
+		return 0, false
 	}
 }
 
 // 最大key
-func (bst *BST) Max() (string, bool) {
+func (bst *BST) Max() (int, bool) {
 	maxNode := bst.maxNode(bst.head)
 	if maxNode != nil {
 		return maxNode.key, true
 	} else {
-		return "", false
+		return 0, false
 	}
 }
 
 // 向下取整(寻找<=key的最大key)
-func (bst *BST) Floor(key string) (string, bool) {
+func (bst *BST) Floor(key int) (int, bool) {
 	floorNode := bst.floorNode(bst.head, key)
 	if floorNode != nil {
 		return floorNode.key, true
 	} else {
-		return "", false
+		return 0, false
 	}
 }
 
 // 向上取整(寻找>=key的最小key)
-func (bst *BST) Ceiling(key string) (string, bool) {
+func (bst *BST) Ceiling(key int) (int, bool) {
 	ceilingNode := bst.ceilingNode(bst.head, key)
 	if ceilingNode != nil {
 		return ceilingNode.key, true
 	} else {
-		return "", false
+		return 0, false
 	}
 }
 
 // 返回排名为k的节点, 排名范围[0,k]
-func (bst *BST) Select(k int) (string, bool) {
+func (bst *BST) Select(k int) (int, bool) {
 	selectNode := bst.selectNode(bst.head, k)
 	if selectNode != nil {
 		return selectNode.key, true
 	} else {
-		return "", false
+		return 0, false
 	}
 }
 
 // 返回 < key 的键的数量
-func (bst *BST) Rank(key string) (int, bool) {
+func (bst *BST) Rank(key int) (int, bool) {
 	return bst.rankNode(bst.head, key)
 }
 
@@ -144,12 +145,12 @@ func (bst *BST) DeleteMax() {
 }
 
 // 删除键
-func (bst *BST) Delete(key string) {
+func (bst *BST) Delete(key int) {
 	bst.head = bst.deleteNode(bst.head, key)
 }
 
 // 范围查找
-func (bst *BST) Keys(lo, hi string) []string {
+func (bst *BST) Keys(lo, hi int) []string {
 	var result []string
 	bst.keysNode(bst.head, &result, lo, hi)
 	return result
@@ -172,7 +173,7 @@ func (bst *BST) prettifyNode(nodes []*Node, level, maxLevel int, s *string) {
 		if node != nil {
 			newNodes = append(newNodes, node.left)
 			newNodes = append(newNodes, node.right)
-			*s += node.key
+			*s += strconv.Itoa(node.key)
 		} else {
 			newNodes = append(newNodes, (*Node)(nil))
 			newNodes = append(newNodes, (*Node)(nil))
@@ -224,7 +225,7 @@ func (bst *BST) depth(node *Node) int {
 	return common.MaxInt(ld, rd) + 1
 }
 
-func (bst *BST) putNode(node *Node, key, value string) *Node {
+func (bst *BST) putNode(node *Node, key int, value string) *Node {
 	if node == nil {
 		return NewNode(key, value, 1)
 	}
@@ -240,7 +241,7 @@ func (bst *BST) putNode(node *Node, key, value string) *Node {
 	return node
 }
 
-func (bst *BST) getNode(node *Node, key string) *Node {
+func (bst *BST) getNode(node *Node, key int) *Node {
 	if node == nil {
 		return nil
 	}
@@ -278,7 +279,7 @@ func (bst *BST) maxNode(node *Node) *Node {
 	}
 }
 
-func (bst *BST) floorNode(node *Node, key string) *Node {
+func (bst *BST) floorNode(node *Node, key int) *Node {
 	if node == nil {
 		return nil
 	}
@@ -297,7 +298,7 @@ func (bst *BST) floorNode(node *Node, key string) *Node {
 	}
 }
 
-func (bst *BST) ceilingNode(node *Node, key string) *Node {
+func (bst *BST) ceilingNode(node *Node, key int) *Node {
 	if node == nil {
 		return nil
 	}
@@ -330,7 +331,7 @@ func (bst *BST) selectNode(node *Node, k int) *Node {
 	}
 }
 
-func (bst *BST) rankNode(node *Node, key string) (int, bool) {
+func (bst *BST) rankNode(node *Node, key int) (int, bool) {
 	if node == nil {
 		return 0, false
 	}
@@ -373,7 +374,7 @@ func (bst *BST) deleteMaxNode(node *Node) *Node {
 	}
 }
 
-func (bst *BST) deleteNode(node *Node, key string) *Node {
+func (bst *BST) deleteNode(node *Node, key int) *Node {
 	if node == nil {
 		return nil
 	}
@@ -398,7 +399,7 @@ func (bst *BST) deleteNode(node *Node, key string) *Node {
 	return node
 }
 
-func (bst *BST) keysNode(node *Node, result *[]string, lo, hi string) {
+func (bst *BST) keysNode(node *Node, result *[]string, lo, hi int) {
 	if node == nil {
 		return
 	}
@@ -408,7 +409,7 @@ func (bst *BST) keysNode(node *Node, result *[]string, lo, hi string) {
 	}
 
 	if lo <= node.key && node.key <= hi {
-		*result = append(*result, node.key)
+		*result = append(*result, strconv.Itoa(node.key))
 	}
 
 	if hi > node.key {
