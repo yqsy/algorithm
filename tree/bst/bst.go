@@ -1,6 +1,9 @@
 package bst
 
-import "math"
+import (
+	"math"
+	"github.com/yqsy/algorithm/tree/common"
+)
 
 type Node struct {
 	key   string
@@ -10,20 +13,6 @@ type Node struct {
 
 	// 以该结点为根的子树中的结点总数(包括自身结点)
 	n int
-}
-
-func maxInt(a, b int) int {
-	if a > b {
-		return a
-	} else {
-		return b
-	}
-}
-
-func addSpaces(n int, s *string) {
-	for i := 0; i < n; i++ {
-		*s += " "
-	}
 }
 
 func isAllNodesNil(nodes []*Node) bool {
@@ -36,7 +25,7 @@ func isAllNodesNil(nodes []*Node) bool {
 }
 
 func NewNode(key string, value string, n int) *Node {
-	return &Node{key: key, value: value, n : n}
+	return &Node{key: key, value: value, n: n}
 }
 
 type BST struct {
@@ -45,6 +34,10 @@ type BST struct {
 
 // 利用队列层次遍历,打印树
 func (bst *BST) Prettify() string {
+	if bst.head == nil {
+		return ""
+	}
+
 	nodes := []*Node{bst.head}
 	dep := bst.Depth()
 	s := ""
@@ -172,7 +165,7 @@ func (bst *BST) prettifyNode(nodes []*Node, level, maxLevel int, s *string) {
 	firstSpaces := int(math.Pow(2, float64(floor))) - 1
 	betweenSpaces := int(math.Pow(2, float64(floor+1))) - 1
 
-	addSpaces(firstSpaces, s)
+	common.AddSpaces(firstSpaces, s)
 
 	var newNodes []*Node
 	for _, node := range nodes {
@@ -185,7 +178,7 @@ func (bst *BST) prettifyNode(nodes []*Node, level, maxLevel int, s *string) {
 			newNodes = append(newNodes, (*Node)(nil))
 			*s += " "
 		}
-		addSpaces(betweenSpaces, s)
+		common.AddSpaces(betweenSpaces, s)
 	}
 
 	*s += "\n"
@@ -193,9 +186,9 @@ func (bst *BST) prettifyNode(nodes []*Node, level, maxLevel int, s *string) {
 
 	for i := 1; i <= endgeLines; i++ {
 		for j := 0; j < len(nodes); j++ {
-			addSpaces(firstSpaces-i, s)
+			common.AddSpaces(firstSpaces-i, s)
 			if nodes[j] == nil {
-				addSpaces(endgeLines+endgeLines+i+1, s)
+				common.AddSpaces(endgeLines+endgeLines+i+1, s)
 				continue
 			}
 
@@ -205,7 +198,7 @@ func (bst *BST) prettifyNode(nodes []*Node, level, maxLevel int, s *string) {
 				*s += " "
 			}
 
-			addSpaces(i+i-1, s)
+			common.AddSpaces(i+i-1, s)
 
 			if nodes[j].right != nil {
 				*s += "\\"
@@ -213,7 +206,7 @@ func (bst *BST) prettifyNode(nodes []*Node, level, maxLevel int, s *string) {
 				*s += " "
 			}
 
-			addSpaces(endgeLines+endgeLines-i, s)
+			common.AddSpaces(endgeLines+endgeLines-i, s)
 		}
 
 		*s += "\n"
@@ -228,7 +221,7 @@ func (bst *BST) depth(node *Node) int {
 	}
 	ld := bst.depth(node.left)
 	rd := bst.depth(node.right)
-	return maxInt(ld, rd) + 1
+	return common.MaxInt(ld, rd) + 1
 }
 
 func (bst *BST) putNode(node *Node, key, value string) *Node {
