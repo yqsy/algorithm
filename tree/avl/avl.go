@@ -168,22 +168,24 @@ func (avl *AVL) getBalanceFactor(node *Node) int {
 	return avl.nodeHeight(node.left) - avl.nodeHeight(node.right)
 }
 
-func (avl *AVL) rightRotationNode(Y *Node) {
+func (avl *AVL) rightRotationNode(Y *Node) *Node {
 	X := Y.left
 	T2 := X.right
 	Y.left = T2
 	X.right = Y
 	Y.height = common.MaxInt(avl.nodeHeight(Y.left), avl.nodeHeight(Y.right))
 	X.height = common.MaxInt(avl.nodeHeight(X.left), avl.nodeHeight(X.right))
+	return X
 }
 
-func (avl *AVL) leftRotationNode(X *Node) {
+func (avl *AVL) leftRotationNode(X *Node) *Node {
 	Y := X.right
 	T2 := Y.left
 	X.right = T2
 	Y.left = X
 	X.height = common.MaxInt(avl.nodeHeight(X.left), avl.nodeHeight(X.right))
 	Y.height = common.MaxInt(avl.nodeHeight(Y.left), avl.nodeHeight(Y.right))
+	return Y
 }
 
 func (avl *AVL) rebalancedNode(node *Node) {
