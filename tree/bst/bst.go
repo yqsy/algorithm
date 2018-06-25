@@ -378,10 +378,10 @@ func (bst *BST) deleteNode(node *Node, key string) *Node {
 		return nil
 	}
 
-	if key > node.key {
-		node.right = bst.deleteNode(node.right, key)
-	} else if key < node.key {
+	if key < node.key {
 		node.left = bst.deleteNode(node.left, key)
+	} else if key > node.key {
+		node.right = bst.deleteNode(node.right, key)
 	} else {
 		if node.left == nil {
 			return node.right

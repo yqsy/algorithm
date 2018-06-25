@@ -116,8 +116,7 @@ func (avl *AVL) putNode(node *Node, key, value string) *Node {
 		node.value = value
 	}
 	node.height = common.MaxInt(avl.nodeHeight(node.left), avl.nodeHeight(node.right)) + 1
-	avl.rebalancedNode(node)
-	return node
+	return avl.rebalancedNode(node)
 }
 
 func (avl *AVL) deleteMinNode(node *Node) *Node {
@@ -130,8 +129,7 @@ func (avl *AVL) deleteMinNode(node *Node) *Node {
 	} else {
 		node.left = avl.deleteMinNode(node.left)
 		node.height = common.MaxInt(avl.nodeHeight(node.left), avl.nodeHeight(node.right)) + 1
-		avl.rebalancedNode(node)
-		return node
+		return avl.rebalancedNode(node)
 	}
 }
 
@@ -140,10 +138,10 @@ func (avl *AVL) deleteNode(node *Node, key string) *Node {
 		return nil
 	}
 
-	if key > node.key {
-		node.right = avl.deleteNode(node.right, key)
-	} else if key < node.key {
+	if key < node.key {
 		node.left = avl.deleteNode(node.left, key)
+	} else if key > node.key {
+		node.right = avl.deleteNode(node.right, key)
 	} else {
 		if node.left == nil {
 			return node.right
@@ -157,8 +155,7 @@ func (avl *AVL) deleteNode(node *Node, key string) *Node {
 		node = min
 	}
 	node.height = common.MaxInt(avl.nodeHeight(node.left), avl.nodeHeight(node.right)) + 1
-	avl.rebalancedNode(node)
-	return node
+	return avl.rebalancedNode(node)
 }
 
 func (avl *AVL) getBalanceFactor(node *Node) int {
@@ -173,8 +170,8 @@ func (avl *AVL) rightRotationNode(Y *Node) *Node {
 	T2 := X.right
 	Y.left = T2
 	X.right = Y
-	Y.height = common.MaxInt(avl.nodeHeight(Y.left), avl.nodeHeight(Y.right))
-	X.height = common.MaxInt(avl.nodeHeight(X.left), avl.nodeHeight(X.right))
+	Y.height = common.MaxInt(avl.nodeHeight(Y.left), avl.nodeHeight(Y.right)) + 1
+	X.height = common.MaxInt(avl.nodeHeight(X.left), avl.nodeHeight(X.right)) + 1
 	return X
 }
 
@@ -183,12 +180,12 @@ func (avl *AVL) leftRotationNode(X *Node) *Node {
 	T2 := Y.left
 	X.right = T2
 	Y.left = X
-	X.height = common.MaxInt(avl.nodeHeight(X.left), avl.nodeHeight(X.right))
-	Y.height = common.MaxInt(avl.nodeHeight(Y.left), avl.nodeHeight(Y.right))
+	X.height = common.MaxInt(avl.nodeHeight(X.left), avl.nodeHeight(X.right)) + 1
+	Y.height = common.MaxInt(avl.nodeHeight(Y.left), avl.nodeHeight(Y.right)) + 1
 	return Y
 }
 
-func (avl *AVL) rebalancedNode(node *Node) {
+func (avl *AVL) rebalancedNode(node *Node) *Node{
 	balanceFactor := avl.getBalanceFactor(node)
 
 	// 左边树高
@@ -196,23 +193,24 @@ func (avl *AVL) rebalancedNode(node *Node) {
 		leftBalanceFactor := avl.getBalanceFactor(node.left)
 		if leftBalanceFactor > 0 {
 			// case1
-			avl.rightRotationNode(node)
+			return avl.rightRotationNode(node)
 		} else if leftBalanceFactor < 0 {
 			// case2
 			avl.leftRotationNode(node.left)
-			avl.rightRotationNode(node)
+			return avl.rightRotationNode(node)
 		}
 	} else if balanceFactor < -1 {
 		rightBalanceFactor := avl.getBalanceFactor(node.right)
 		if rightBalanceFactor < 0 {
 			// case4
-			avl.leftRotationNode(node)
+			return avl.leftRotationNode(node)
 		} else if rightBalanceFactor > 0 {
 			// case3
 			avl.rightRotationNode(node.right)
-			avl.leftRotationNode(node)
+			return avl.leftRotationNode(node)
 		}
 	}
+	return node
 }
 
 func (avl *AVL) prettifyNode(nodes []*Node, level, maxLevel int, s *string) {

@@ -14,7 +14,6 @@ func TestBSTPrettify(t *testing.T) {
 	bst.Put("5", "E")
 	bst.Put("6", "F")
 	bst.Put("7", "G")
-
 	fmt.Println(bst.Prettify())
 }
 
