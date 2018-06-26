@@ -117,7 +117,7 @@ func (avl *AVL) putNode(node *Node, key int, value string) *Node {
 		node.value = value
 	}
 	node.height = common.MaxInt(avl.nodeHeight(node.left), avl.nodeHeight(node.right)) + 1
-	return avl.rebalancedNode(node)
+	return avl.insertRebalancedNode(node)
 }
 
 func (avl *AVL) deleteMinNode(node *Node) *Node {
@@ -130,7 +130,7 @@ func (avl *AVL) deleteMinNode(node *Node) *Node {
 	} else {
 		node.left = avl.deleteMinNode(node.left)
 		node.height = common.MaxInt(avl.nodeHeight(node.left), avl.nodeHeight(node.right)) + 1
-		return avl.rebalancedNode(node)
+		return avl.insertRebalancedNode(node)
 	}
 }
 
@@ -156,7 +156,7 @@ func (avl *AVL) deleteNode(node *Node, key int) *Node {
 		node = min
 	}
 	node.height = common.MaxInt(avl.nodeHeight(node.left), avl.nodeHeight(node.right)) + 1
-	return avl.rebalancedNode(node)
+	return avl.deleteRebalancedNode(node)
 }
 
 func (avl *AVL) getBalanceFactor(node *Node) int {
@@ -186,11 +186,11 @@ func (avl *AVL) leftRotationNode(X *Node) *Node {
 	return Y
 }
 
-func (avl *AVL) rebalancedNode(node *Node) *Node{
+func (avl *AVL) insertRebalancedNode(node *Node) *Node {
 	balanceFactor := avl.getBalanceFactor(node)
 
-	// 左边树高
 	if balanceFactor > 1 {
+		// 左边树高
 		leftBalanceFactor := avl.getBalanceFactor(node.left)
 		if leftBalanceFactor > 0 {
 			// case1
@@ -201,6 +201,7 @@ func (avl *AVL) rebalancedNode(node *Node) *Node{
 			return avl.rightRotationNode(node)
 		}
 	} else if balanceFactor < -1 {
+		// 右边树高
 		rightBalanceFactor := avl.getBalanceFactor(node.right)
 		if rightBalanceFactor < 0 {
 			// case4
@@ -211,6 +212,20 @@ func (avl *AVL) rebalancedNode(node *Node) *Node{
 			return avl.leftRotationNode(node)
 		}
 	}
+	return node
+}
+
+func (avl *AVL) deleteRebalancedNode(node *Node) *Node {
+	balanceFactor := avl.getBalanceFactor(node)
+
+	if balanceFactor > 1 {
+		// 左边树高
+		return avl.rightRotationNode(node)
+	} else if balanceFactor < -1 {
+		// 右边树高
+		return avl.leftRotationNode(node)
+	}
+
 	return node
 }
 

@@ -91,7 +91,6 @@ func TestCase2(t *testing.T) {
 	}
 }
 
-
 // case4: 在250结点下插入的2种情况. + 150不存在的2种情况
 //      100
 //     / \
@@ -108,8 +107,6 @@ func TestCase2(t *testing.T) {
 //     100   250
 //    / \    /
 //    50 150 230
-
-
 
 func TestCase4(t *testing.T) {
 	avl := &AVL{}
@@ -131,7 +128,6 @@ func TestCase4(t *testing.T) {
 	}
 }
 
-
 // case3: 在150结点下插入的2种情况. + 250不存在的2种情况
 //       100
 //      / \
@@ -142,14 +138,12 @@ func TestCase4(t *testing.T) {
 //        /
 //       120
 
-
 //       150
 //      /   \
 //     /     \
 //    100   200
 //    /  \      \
 //    50 120   250
-
 
 func TestCase3(t *testing.T) {
 	avl := &AVL{}
@@ -170,4 +164,71 @@ func TestCase3(t *testing.T) {
 		t.Fatal("err")
 	}
 }
+
+// 删除50 导致不平衡
+//       100
+//      / \
+//     /   \
+//     50   150
+//        / \
+//        120 200
+
+//       150
+//      / \
+//     /   \
+//     100   200
+//      \
+//      120
+
+func TestDel1(t *testing.T) {
+	avl := &AVL{}
+	avl.Put(100, "100")
+	avl.Put(50, "50")
+	avl.Put(150, "150")
+	avl.Put(120, "120")
+	avl.Put(200, "200")
+
+	avl.Delete(50)
+
+	if avl.head.key != 150 ||
+		avl.head.left.key != 100 ||
+		avl.head.right.key != 200 ||
+		avl.head.left.right.key != 120 {
+		t.Fatal("err")
+	}
+}
+
+// 删除150 导致不平衡
+//       100
+//      / \
+//     /   \
+//     50   150
+//    / \
+//    20 60
+
+//       50
+//      / \
+//     /   \
+//     20   100
+//        /
+//        60
+
+func TestDel2(t *testing.T) {
+	avl := &AVL{}
+	avl.Put(100, "100")
+	avl.Put(50, "50")
+	avl.Put(150, "150")
+	avl.Put(20, "20")
+	avl.Put(60, "60")
+
+	avl.Delete(150)
+
+	if avl.head.key != 50 ||
+		avl.head.left.key != 20 ||
+		avl.head.right.key != 100 ||
+		avl.head.right.left.key != 60 {
+		t.Fatal("err")
+	}
+}
+
 
