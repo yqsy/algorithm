@@ -12,7 +12,7 @@
 * https://www.jianshu.com/p/65c90aa1236d (还不错啦)
 * https://zh.wikipedia.org/wiki/AVL%E6%A0%91
 * https://stackoverflow.com/questions/2603692/what-is-the-difference-between-tree-depth-and-height
-* https://stackoverflow.com/questions/3955680/how-to-check-if-my-avl-tree-implementation-is-correct (测试用例验证正确性)
+* https://stackoverflow.com/questions/3955680/how-to-check-if-my-avl-tree-implementation-is-correct (测试用例验证正确性,稍微参考下把,其实不太好)
 
 > AVL树是最先发明的自平衡二叉查找树.在AVL树中任何结点的两个子树的高度最大差距为1,所以也被成为高度平衡树.查找,插入和删除在平均和最坏情况下都是O(logn)
 
