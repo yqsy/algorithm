@@ -197,7 +197,7 @@ func (avl *AVL) rebalancedNode(node *Node) *Node{
 			return avl.rightRotationNode(node)
 		} else if leftBalanceFactor < 0 {
 			// case2
-			avl.leftRotationNode(node.left)
+			node.left = avl.leftRotationNode(node.left)
 			return avl.rightRotationNode(node)
 		}
 	} else if balanceFactor < -1 {
@@ -207,7 +207,7 @@ func (avl *AVL) rebalancedNode(node *Node) *Node{
 			return avl.leftRotationNode(node)
 		} else if rightBalanceFactor > 0 {
 			// case3
-			avl.rightRotationNode(node.right)
+			node.right = avl.rightRotationNode(node.right)
 			return avl.leftRotationNode(node)
 		}
 	}

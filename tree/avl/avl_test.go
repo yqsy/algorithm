@@ -43,5 +43,6 @@ func Test1a(t *testing.T) {
 	if head.right == nil || head.right.key != 20 {
 		t.Fatal("err")
 	}
-
 }
+
+
