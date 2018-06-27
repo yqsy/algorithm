@@ -26,9 +26,10 @@
 
 树
 * [binarytree(二叉树)](tree/binarytree)
-* [bst tree(二叉查找树)](tree/bsttree)
-* [avl tree(自平衡二叉查找树)](tree/avltree)
-* rb tree(红黑二叉查找树)(rbtree)
+* [bst tree(二叉查找树)](tree/bst)
+* [avl tree(自平衡二叉查找树)](tree/avl)
+* [2-3tree(2-3查找树)](tree/23)
+* [rb tree(红黑二叉查找树)](tree/rb)
 * b- tree(bminustree)
 * b tree(btree)
 * b+ tree(bplustree)

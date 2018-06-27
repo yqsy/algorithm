@@ -50,14 +50,6 @@ func (bst *BST) Depth() int {
 	return bst.depth(bst.head)
 }
 
-func (bst *BST) NodeSize(node *Node) int {
-	if node == nil {
-		return 0
-	} else {
-		return node.n
-	}
-}
-
 func (bst *BST) Size() int {
 	if bst.head == nil {
 		return 0
@@ -154,6 +146,14 @@ func (bst *BST) Keys(lo, hi int) []string {
 	var result []string
 	bst.keysNode(bst.head, &result, lo, hi)
 	return result
+}
+
+func (bst *BST) NodeSize(node *Node) int {
+	if node == nil {
+		return 0
+	} else {
+		return node.n
+	}
 }
 
 func (bst *BST) prettifyNode(nodes []*Node, level, maxLevel int, s *string) {
