@@ -4,6 +4,7 @@ import (
 	"testing"
 	"fmt"
 	"strconv"
+	"math/rand"
 )
 
 func TestAvlSimplePrint(t *testing.T) {
@@ -231,4 +232,66 @@ func TestDel2(t *testing.T) {
 	}
 }
 
+func CheckRecursion(node *Node) bool {
+	if node == nil {
+		return true
+	}
 
+	if node.left != nil {
+		if node.key < node.left.key {
+			return false
+		}
+	}
+
+	if node.right != nil {
+		if node.key > node.right.key {
+			return false
+		}
+	}
+
+	leftCheck := CheckRecursion(node.left)
+
+	if !leftCheck {
+		return false
+	}
+
+	rightCheck := CheckRecursion(node.right)
+
+	if !rightCheck {
+		return false
+	}
+
+	return true
+}
+
+func Test10000(t *testing.T) {
+	avl := &AVL{}
+
+	for i := 0; i < 10000; i++ {
+		avl.Put(i, strconv.Itoa(i))
+	}
+
+	if !CheckRecursion(avl.head) {
+		t.Fatal("err")
+	}
+
+	for i := 0; i < 10000; i++ {
+		if val, _ := avl.Get(i); val != strconv.Itoa(i) {
+			t.Fatal("err")
+		}
+	}
+}
+
+func TestRandom1000000(t *testing.T) {
+	avl := &AVL{}
+	for i := 0; i < 1000000; i++ {
+		x := rand.Intn(1000000)
+		avl.Put(x, strconv.Itoa(x))
+	}
+
+	avl.Put(10000000, "hello")
+
+	if val, _ := avl.Get(10000000); val != "hello" {
+		t.Fatal("err")
+	}
+}
