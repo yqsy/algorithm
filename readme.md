@@ -30,7 +30,6 @@
 * [avl tree(自平衡二叉查找树)](tree/avl)
 * [2-3tree(2-3查找树)](tree/23)
 * [rb tree(红黑二叉查找树)](tree/rb)
-* b- tree(bminustree)
 * b tree(btree)
 * b+ tree(bplustree)
 * trie tree(trietree)

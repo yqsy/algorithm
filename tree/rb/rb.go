@@ -26,6 +26,10 @@ type RB struct {
 	head *Node
 }
 
+func (rb *RB) Put(key int, value string) {
+	rb.head = rb.putNode(rb.head, key, value)
+}
+
 func (rb *RB) NodeSize(node *Node) int {
 	if node == nil {
 		return 0
