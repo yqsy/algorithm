@@ -54,6 +54,48 @@ func (rb *RB) rotateRight(S *Node) *Node {
 	E.color = S.color
 	S.color = RED
 	E.n = S.n
-	S.n = rb.NodeSize(S.left) + rb.NodeSize(S.right) +1
+	S.n = rb.NodeSize(S.left) + rb.NodeSize(S.right) + 1
 	return E
+}
+
+func (rb *RB) flipColors(node *Node) {
+	node.color = RED
+	node.left.color = BLACK
+	node.right.color = BLACK
+}
+
+func (rb *RB) isRed(node *Node) bool {
+	if node == nil {
+		return false
+	}
+	return node.color == RED
+}
+
+func (rb *RB) putNode(node *Node, key int, value string) *Node {
+	if node == nil {
+		return NewNode(key, value, 1, RED)
+	}
+
+	if key < node.key {
+		node.left = rb.putNode(node.left, key, value)
+	} else if key > node.key {
+		node.right = rb.putNode(node.right, key, value)
+	} else {
+		node.value = value
+	}
+
+	if rb.isRed(node.right) && !rb.isRed(node.left) {
+		node = rb.rotateLeft(node)
+	}
+
+	if rb.isRed(node.left) && rb.isRed(node.left.left) {
+		node = rb.rotateRight(node)
+	}
+
+	if rb.isRed(node.left) && rb.isRed(node.right) {
+		rb.flipColors(node)
+	}
+
+	node.n = rb.NodeSize(node.left) + rb.NodeSize(node.right) + 1
+	return node
 }
