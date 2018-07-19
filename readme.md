@@ -40,3 +40,10 @@ B树
 
 Trie
 * trie tree(trietree)
+
+
+图
+* dag(有向无环图)(dag)
+* undirected graph(无向图)(ug)
+* mst(最小生成树)(mst)
+* shortest path(最短路径)(sp)
