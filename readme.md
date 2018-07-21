@@ -4,7 +4,6 @@
 
 <!-- /TOC -->
 
-<a id="markdown-1-说明" name="1-说明"></a>
 # 1. 说明
 
 一些有趣的算法积累
@@ -47,3 +46,25 @@ Trie
 * undirected graph(无向图)(ug)
 * mst(最小生成树)(mst)
 * shortest path(最短路径)(sp)
+* 无向图邻接表
+* 有向图邻接表
+* Krusskal算法
+* Prim算法
+* 最短路径Dijsktra算法
+* 最短路径Bellman-Ford算法
+* 最短路径Floyd算法
+* 拓扑排序
+* 关键路径
+
+字符串
+* KMP
+
+其他
+* 汉诺塔
+* 火车调度问题
+* 操作系统调度问题
+* 背包问题
+* 最大连续子列和
+* 稀疏矩阵
+* 并查集合
+
