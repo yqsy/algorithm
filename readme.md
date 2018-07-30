@@ -4,6 +4,7 @@
 
 <!-- /TOC -->
 
+<a id="markdown-1-说明" name="1-说明"></a>
 # 1. 说明
 
 一些有趣的算法积累
@@ -38,7 +39,7 @@ B树
 * b+ tree(bplustree)
 
 Trie
-* trie tree(trietree)
+* [trie tree](tree/trietree)
 
 
 图
