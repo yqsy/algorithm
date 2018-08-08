@@ -42,6 +42,9 @@ Trie
 * [trie tree](tree/trietree)
 
 
+离散/数学相关
+* [possion_distribution(泊松分布)](math/possion_distribution)
+
 图
 * dag(有向无环图)(dag)
 * undirected graph(无向图)(ug)
