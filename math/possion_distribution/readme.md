@@ -1,9 +1,13 @@
 <!-- TOC -->
 
+- [说明](#说明)
 
 <!-- /TOC -->
 
-$$
-J(\theta) = \frac 1 2 \sum_{i=1}^m (h_\theta(x^{(i)})-y^{(i)})^2
-$$
+
+
+<a id="markdown-说明" name="说明"></a>
+# 说明
+
+* https://www.zhihu.com/question/26441147/answer/429569625 (挺好的解释)
 
