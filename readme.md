@@ -41,6 +41,8 @@ B树
 Trie
 * [trie tree](tree/trietree)
 
+其他
+* [merkle tree](tree/merkle)
 
 离散/数学相关
 * [possion_distribution(泊松分布)](math/possion_distribution)
