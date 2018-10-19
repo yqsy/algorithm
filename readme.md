@@ -22,8 +22,6 @@
 * [heap(堆)](heap)
 * [rotatemin(旋转数组的最小数字)](rotatemin)
 * [binarysearch(二分查找)](binarysearch)
-* [leetcode-4-Median of Two Sorted Arrays](MedianofTwoSortedArrays)
-
 
 二叉树
 * [binarytree(二叉树)](tree/binarytree)
@@ -31,7 +29,7 @@
 
 自平衡二叉查找树
 * [avl tree(自平衡二叉查找树)](tree/avl)
-* [rb tree(红黑二叉查找树)](tree/rb)
+* [rb tree(红黑二叉查找树)-TODO](tree/rb)
 
 B树
 * [2-3tree(2-3查找树)](tree/23)
@@ -45,6 +43,8 @@ Trie
 * [possion_distribution(泊松分布)](math/possion_distribution)
 
 图
+* [graph(图)](grap/graph)
+* [bipartite(二分图)](graph/bipartite)
 * dag(有向无环图)(dag)
 * undirected graph(无向图)(ug)
 * mst(最小生成树)(mst)
