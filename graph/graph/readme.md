@@ -18,6 +18,14 @@ G(V,E)
 * V (vertex): 顶点集
 * E (edge): 边集, 元素是一个二元组数组对,用(x,y)表示
 
+实现:
+
+
+* 添加顶点
+* 添加边
+* BFS 队列
+* DFS 栈
+* 打印 顶点 - 相连接的边
 
 <a id="markdown-2-todo" name="2-todo"></a>
 # 2. TODO
@@ -41,3 +49,4 @@ type NodeQueue struct {
 }
 
 ```
+

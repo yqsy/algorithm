@@ -43,14 +43,13 @@ Trie
 * [possion_distribution(泊松分布)](math/possion_distribution)
 
 图
-* [graph(图)](grap/graph)
+* [graph(图)BFS_DFS](grap/graph)
+* [undirected graph(无向图)](graph/undirectedgraph)
+* digraph(有向图)
 * [bipartite(二分图)](graph/bipartite)
 * dag(有向无环图)(dag)
-* undirected graph(无向图)(ug)
 * mst(最小生成树)(mst)
 * shortest path(最短路径)(sp)
-* 无向图邻接表
-* 有向图邻接表
 * Krusskal算法
 * Prim算法
 * 最短路径Dijsktra算法
