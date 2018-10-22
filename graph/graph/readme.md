@@ -23,8 +23,8 @@ G(V,E)
 
 * 添加顶点
 * 添加边
-* BFS 队列
-* DFS 栈
+* BFS (队列)
+* DFS (栈)
 * 打印 顶点 - 相连接的边
 
 <a id="markdown-2-todo" name="2-todo"></a>
