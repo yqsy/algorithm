@@ -91,7 +91,7 @@ func TestDFS(t *testing.T) {
 
 	g := NewGraphFromBufio(r)
 
-	d := NewDFS(g, 0)
+	d := NewDepthFirstSearch(g, 0)
 
 	if d.Count() != 6 {
 		t.Fatal("err")

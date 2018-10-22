@@ -18,5 +18,6 @@
 * 计算所有顶点的最大度数
 * 计算所有顶点的平均度数
 * 计算自环的个数
-* DFS (递归)
-* DepthFirstPaths 深度优先搜索路径
+* DepthFirstSearch 单点连通性 (递归)
+* DepthFirstPaths 深度优先搜索路径(递归)
+* BreadthFirstPaths 广度优先搜索路径(队列)
