@@ -98,3 +98,24 @@ func TestDFS(t *testing.T) {
 	}
 }
 
+func TestDFSPaths(t *testing.T) {
+	tmpbuf := `6
+8
+0 5
+2 4
+2 3
+1 2
+0 1
+3 4
+3 5
+0 2
+`
+	r := strings.NewReader(tmpbuf)
+
+	g := NewGraphFromBufio(r)
+
+	d := NewDepthFirstPaths(g, 0)
+	paths := d.PathTo(5)
+
+	fmt.Println(paths)
+}

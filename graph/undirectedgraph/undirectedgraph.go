@@ -59,7 +59,7 @@ func (g *Graph) Degree(v int) int {
 // 计算所有顶点的最大度数
 func (g *Graph) MaxDegree() int {
 	max := 0
-	for v := range g.adj {
+	for v := 0; v < g.V; v++ {
 		if g.Degree(v) > max {
 			max = g.Degree(v)
 		}
@@ -76,9 +76,8 @@ func (g *Graph) AvgDegree() float64 {
 func (g *Graph) NumberOfSelfLoops() int {
 	count := 0
 	for v := 0; v < g.V; v++ {
-		near := g.adj[v]
-		for w := 0; w < len(near); w++ {
-			if near[w] == v {
+		for _, w := range g.adj[v] {
+			if w == v {
 				count++
 			}
 		}
@@ -92,10 +91,8 @@ func (g *Graph) String() string {
 	for v := 0; v < g.V; v++ {
 		s += strconv.Itoa(v) + ": "
 
-		near := g.adj[v]
-
-		for w := 0; w < len(near); w++ {
-			s += strconv.Itoa(near[w]) + " "
+		for _, w := range g.adj[v] {
+			s += strconv.Itoa(w) + " "
 		}
 		s += "\n"
 	}
