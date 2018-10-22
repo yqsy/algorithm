@@ -155,3 +155,36 @@ func TestBFSPaths(t *testing.T) {
 		}
 	}
 }
+
+func TestCC(t *testing.T) {
+	f, err := os.Open("tinyG.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	r := bufio.NewReader(f)
+
+	g := NewGraphFromBufio(r)
+
+	cc := NewCC(g)
+	M := cc.Count()
+
+	fmt.Printf("%v compoents\n", M)
+
+	var compnents = make([][]int, M)
+
+	for i := 0; i < M; i++ {
+		compnents[i] = []int{}
+	}
+
+	for v := 0; v < g.V; v ++ {
+		compnents[cc.Id(v)] = append([]int{v}, compnents[cc.Id(v)]...)
+	}
+
+	for i := 0; i < M; i++ {
+		for _, v := range compnents[i] {
+			fmt.Printf("%v ", v)
+		}
+		fmt.Printf("\n")
+	}
+}
