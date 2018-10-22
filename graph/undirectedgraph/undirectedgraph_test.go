@@ -75,7 +75,7 @@ func TestSimpleSelfLoop(t *testing.T) {
 	}
 }
 
-func TestDFS(t *testing.T) {
+func getTmpBuf() string {
 	tmpbuf := `6
 8
 0 5
@@ -87,6 +87,13 @@ func TestDFS(t *testing.T) {
 3 5
 0 2
 `
+
+	return tmpbuf
+}
+
+func TestDFS(t *testing.T) {
+	tmpbuf := getTmpBuf()
+
 	r := strings.NewReader(tmpbuf)
 
 	g := NewGraphFromBufio(r)
@@ -99,23 +106,52 @@ func TestDFS(t *testing.T) {
 }
 
 func TestDFSPaths(t *testing.T) {
-	tmpbuf := `6
-8
-0 5
-2 4
-2 3
-1 2
-0 1
-3 4
-3 5
-0 2
-`
+	tmpbuf := getTmpBuf()
+
 	r := strings.NewReader(tmpbuf)
 
 	g := NewGraphFromBufio(r)
 
 	d := NewDepthFirstPaths(g, 0)
-	paths := d.PathTo(5)
 
-	fmt.Println(paths)
+	for v := 0; v < g.V; v++ {
+		fmt.Printf("%v to %v : ", d.s, v)
+
+		if d.HasPathTo(v) {
+			paths := d.PathTo(v)
+			for _, x := range paths {
+				if x == d.s {
+					fmt.Printf("%v", x)
+				} else {
+					fmt.Printf("-%v", x)
+				}
+			}
+			fmt.Printf("\n")
+		}
+	}
+}
+
+func TestBFSPaths(t *testing.T) {
+	tmpbuf := getTmpBuf()
+
+	r := strings.NewReader(tmpbuf)
+
+	g := NewGraphFromBufio(r)
+
+	b := NewBreadthFirstPaths(g, 0)
+	for v := 0; v < g.V; v++ {
+		fmt.Printf("%v to %v : ", b.s, v)
+
+		if b.HasPathTo(v) {
+			paths := b.PathTo(v)
+			for _, x := range paths {
+				if x == b.s {
+					fmt.Printf("%v", x)
+				} else {
+					fmt.Printf("-%v", x)
+				}
+			}
+			fmt.Printf("\n")
+		}
+	}
 }
