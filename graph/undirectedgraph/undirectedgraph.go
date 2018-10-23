@@ -13,14 +13,14 @@ type Graph struct {
 }
 
 func NewGraph(V int) *Graph {
-	graph := &Graph{}
-	graph.V = V
-	graph.E = 0
-	graph.adj = [][]int{}
+	g := &Graph{}
+	g.V = V
+	g.E = 0
+	g.adj = [][]int{}
 	for i := 0; i < V; i++ {
-		graph.adj = append(graph.adj, []int{})
+		g.adj = append(g.adj, []int{})
 	}
-	return graph
+	return g
 }
 
 func NewGraphFromBufio(r io.Reader) *Graph {
@@ -33,16 +33,16 @@ func NewGraphFromBufio(r io.Reader) *Graph {
 		panic(err)
 	}
 
-	graph := NewGraph(V)
+	g := NewGraph(V)
 
 	for i := 0; i < E; i++ {
 		var v, w int
 		if _, err := fmt.Fscanf(r, "%d %d\n", &v, &w); err != nil {
 			panic(err)
 		}
-		graph.AddEdge(v, w)
+		g.AddEdge(v, w)
 	}
-	return graph
+	return g
 }
 
 func (g *Graph) AddEdge(v, w int) {

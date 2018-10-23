@@ -330,7 +330,7 @@ func TestDegreesOfSeparation(t *testing.T) {
 			paths := bfs.PathTo(t)
 
 			for _, v := range paths {
-				fmt.Println("    " +sg.Name(v))
+				fmt.Println("    " + sg.Name(v))
 			}
 		} else {
 			fmt.Println("Not connected")

@@ -45,9 +45,8 @@ Trie
 图
 * [graph(图)BFS_DFS](grap/graph)
 * [undirected graph(无向图)](graph/undirectedgraph)
-* digraph(有向图)
 * [bipartite(二分图)](graph/bipartite)
-* dag(有向无环图)(dag)
+* [directed graph(有向图)](graph/directedgraph)
 * mst(最小生成树)(mst)
 * shortest path(最短路径)(sp)
 * Krusskal算法
