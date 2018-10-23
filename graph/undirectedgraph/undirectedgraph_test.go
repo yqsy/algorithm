@@ -15,6 +15,8 @@ func TestSimpleString(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	defer f.Close()
+
 	r := bufio.NewReader(f)
 
 	g := NewGraphFromBufio(r)
@@ -295,3 +297,17 @@ func TestSimpleBipartite3(t *testing.T) {
 
 	fmt.Println(c.IsBipartite())
 }
+
+// 测试symbol转为图
+func TestSymbolGraph(t *testing.T) {
+	s := NewSymbolGraph("routes.txt", " ")
+
+	if !s.Contains("MCO") {
+		t.Fatal("err")
+	}
+
+	idx := s.Index("MCO")
+
+	fmt.Println(s.Name(idx))
+}
+

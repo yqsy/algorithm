@@ -24,3 +24,5 @@
 * CC 深度优先搜索检测连通性
 * Cycle 检测给定的图是否是无环图 (不存在自环或平行边)
 * TwoColor 判断图是否是二分图
+* SymbolGraph 符号转换为图
+* DegreesOfSeparation 间隔的度数
