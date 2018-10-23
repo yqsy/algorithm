@@ -8,6 +8,7 @@ import (
 	"testing"
 )
 
+// 从文件读入图
 func TestSimpleString(t *testing.T) {
 	f, err := os.Open("tinyG.txt")
 	if err != nil {
@@ -21,6 +22,7 @@ func TestSimpleString(t *testing.T) {
 	fmt.Println(g.String())
 }
 
+// 度数
 func TestSimpleDegree(t *testing.T) {
 
 	// 1. 两个顶点 2. 一条边
@@ -49,6 +51,7 @@ func TestSimpleDegree(t *testing.T) {
 	}
 }
 
+// 自环
 func TestSimpleSelfLoop(t *testing.T) {
 	// 1. 一个顶点 2. 一条边
 	tmpbuf := `1
@@ -91,6 +94,7 @@ func getTmpBuf() string {
 	return tmpbuf
 }
 
+// 简单DFS
 func TestDFS(t *testing.T) {
 	tmpbuf := getTmpBuf()
 
@@ -105,6 +109,7 @@ func TestDFS(t *testing.T) {
 	}
 }
 
+// DFS 路径
 func TestDFSPaths(t *testing.T) {
 	tmpbuf := getTmpBuf()
 
@@ -131,6 +136,7 @@ func TestDFSPaths(t *testing.T) {
 	}
 }
 
+// BFS 路径
 func TestBFSPaths(t *testing.T) {
 	tmpbuf := getTmpBuf()
 
@@ -156,6 +162,7 @@ func TestBFSPaths(t *testing.T) {
 	}
 }
 
+// 连通性检查
 func TestCC(t *testing.T) {
 	f, err := os.Open("tinyG.txt")
 	if err != nil {
@@ -189,6 +196,7 @@ func TestCC(t *testing.T) {
 	}
 }
 
+// 两点 连通
 func TestSimpleCycle(t *testing.T) {
 	tmpbuf := `2
 1
@@ -201,6 +209,7 @@ func TestSimpleCycle(t *testing.T) {
 	fmt.Println("has cycle: ", c.HasCycle())
 }
 
+// 三点 非连通
 func TestSimpleCycle2(t *testing.T) {
 	tmpbuf := `3
 2
@@ -214,7 +223,7 @@ func TestSimpleCycle2(t *testing.T) {
 	fmt.Println("has cycle: ", c.HasCycle())
 }
 
-
+// 三点,连通
 func TestSimpleCycle3(t *testing.T) {
 	tmpbuf := `3
 3
@@ -227,4 +236,62 @@ func TestSimpleCycle3(t *testing.T) {
 	c := NewCycle(g)
 
 	fmt.Println("has cycle: ", c.HasCycle())
+}
+
+// 四点,两两分
+func TestSimpleCycle4(t *testing.T) {
+	tmpbuf := `4
+2
+0 1
+2 3
+`
+	r := strings.NewReader(tmpbuf)
+	g := NewGraphFromBufio(r)
+	c := NewCycle(g)
+
+	fmt.Println("has cycle: ", c.HasCycle())
+}
+
+// 两点判读是否为二分图
+func TestSimpleBipartite1(t *testing.T) {
+	tmpbuf := `2
+1
+0 1
+`
+	r := strings.NewReader(tmpbuf)
+	g := NewGraphFromBufio(r)
+	c := NewTwoColor(g)
+
+	fmt.Println(c.IsBipartite())
+}
+
+// 三点判读是否为二分图
+func TestSimpleBipartite2(t *testing.T) {
+	tmpbuf := `3
+3
+0 1
+1 2
+2 0
+`
+	r := strings.NewReader(tmpbuf)
+	g := NewGraphFromBufio(r)
+	c := NewTwoColor(g)
+
+	fmt.Println(c.IsBipartite())
+}
+
+// 四点判读是否为二分图
+func TestSimpleBipartite3(t *testing.T) {
+	tmpbuf := `4
+4
+0 1
+1 2
+2 3
+3 0
+`
+	r := strings.NewReader(tmpbuf)
+	g := NewGraphFromBufio(r)
+	c := NewTwoColor(g)
+
+	fmt.Println(c.IsBipartite())
 }
