@@ -311,3 +311,31 @@ func TestSymbolGraph(t *testing.T) {
 	fmt.Println(s.Name(idx))
 }
 
+// 间隔的度数
+func TestDegreesOfSeparation(t *testing.T) {
+	sg := NewSymbolGraph("routes.txt", " ")
+	g := sg.g
+	source := "JFK"
+	if !sg.Contains(source) {
+		t.Fatal("err")
+	}
+	s := sg.Index(source)
+	bfs := NewBreadthFirstPaths(g, s)
+
+	sink := "LAS"
+
+	if sg.Contains(sink) {
+		t := sg.Index(sink)
+		if bfs.HasPathTo(t) {
+			paths := bfs.PathTo(t)
+
+			for _, v := range paths {
+				fmt.Println("    " +sg.Name(v))
+			}
+		} else {
+			fmt.Println("Not connected")
+		}
+	} else {
+		fmt.Println("Not in data base")
+	}
+}
