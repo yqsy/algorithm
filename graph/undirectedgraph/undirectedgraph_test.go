@@ -188,3 +188,43 @@ func TestCC(t *testing.T) {
 		fmt.Printf("\n")
 	}
 }
+
+func TestSimpleCycle(t *testing.T) {
+	tmpbuf := `2
+1
+0 1
+`
+	r := strings.NewReader(tmpbuf)
+	g := NewGraphFromBufio(r)
+	c := NewCycle(g)
+
+	fmt.Println("has cycle: ", c.HasCycle())
+}
+
+func TestSimpleCycle2(t *testing.T) {
+	tmpbuf := `3
+2
+0 1
+1 2
+`
+	r := strings.NewReader(tmpbuf)
+	g := NewGraphFromBufio(r)
+	c := NewCycle(g)
+
+	fmt.Println("has cycle: ", c.HasCycle())
+}
+
+
+func TestSimpleCycle3(t *testing.T) {
+	tmpbuf := `3
+3
+0 1
+1 2
+2 0
+`
+	r := strings.NewReader(tmpbuf)
+	g := NewGraphFromBufio(r)
+	c := NewCycle(g)
+
+	fmt.Println("has cycle: ", c.HasCycle())
+}

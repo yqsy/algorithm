@@ -22,3 +22,4 @@
 * DepthFirstPaths 深度优先搜索路径(递归)
 * BreadthFirstPaths 广度优先搜索路径(队列)
 * CC 深度优先搜索检测连通性
+* Cycle 检测给定的图是否是无环图 (不存在自环或平行边)
