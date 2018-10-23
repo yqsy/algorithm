@@ -66,7 +66,7 @@ func TestDirectedCycle(t *testing.T) {
 // 基于深度优先搜索的顶点排序
 func TestDepthFirstOrder(t *testing.T) {
 
-	f, err := os.Open("tinyG.txt")
+	f, err := os.Open("tinyG3.txt")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -92,7 +92,6 @@ func TestDepthFirstOrder(t *testing.T) {
 	}
 	fmt.Println()
 
-
 	length = d.reversePost.Len()
 	for i := 0; i < length; i++ {
 		ele := d.reversePost.Pop().(int)
@@ -100,5 +99,16 @@ func TestDepthFirstOrder(t *testing.T) {
 	}
 	fmt.Println()
 
+	fmt.Println(g.String())
+}
 
+func TestTopological(t *testing.T) {
+
+	s := NewSymbolGraph("jobs.txt", "/")
+
+	top := NewTopological(s.g)
+
+	for _, v := range top.order {
+		fmt.Println(s.Name(v))
+	}
 }

@@ -14,6 +14,8 @@ func NewDirectedCycle(g *Digraph) *DirectedCycle {
 	d.marked = make([]bool, g.V)
 	d.edgeTo = make([]int, g.V)
 	d.onStack = make([]bool, g.V)
+	d.cycle = nil
+
 	for v := 0; v < g.V; v++ {
 		if !d.marked[v] {
 			d.dfs(g, v)
@@ -41,8 +43,8 @@ func (d *DirectedCycle) dfs(g *Digraph, v int) {
 			d.cycle.Push(w)
 			d.cycle.Push(v)
 		}
-		d.onStack[v] = false
 	}
+	d.onStack[v] = false
 }
 
 func (d *DirectedCycle) HasCycle() bool {
