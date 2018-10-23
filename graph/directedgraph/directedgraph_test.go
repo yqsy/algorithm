@@ -45,3 +45,22 @@ func TestSimleDfs(t *testing.T) {
 	}
 	fmt.Println()
 }
+
+// 有向图是否是有环
+func TestDirectedCycle(t *testing.T) {
+	f, err := os.Open("tinyG2.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer f.Close()
+
+	r := bufio.NewReader(f)
+	g := NewDigraphFromBufio(r)
+
+
+	d := NewDirectedCycle(g)
+
+	fmt.Println(d.HasCycle())
+}
+
