@@ -43,18 +43,14 @@ Trie
 * [possion_distribution(泊松分布)](math/possion_distribution)
 
 图
-* [graph(图)BFS_DFS](grap/graph)
 * [undirected graph(无向图)](graph/undirectedgraph)
-* [bipartite(二分图)](graph/bipartite)
 * [directed graph(有向图)](graph/directedgraph)
-* mst(最小生成树)(mst)
-* shortest path(最短路径)(sp)
-* Krusskal算法
-* Prim算法
-* 最短路径Dijsktra算法
-* 最短路径Bellman-Ford算法
-* 最短路径Floyd算法
-* 关键路径
+* [mst(最小生成树)](graph/mst)
+* [shortest path(最短路径)](graph/sp)
+ 
+---
+* [graph(图)BFS_DFS](grap/graph)
+* [bipartite(二分图)](graph/bipartite)
 
 字符串
 * KMP

@@ -42,8 +42,7 @@ func (d *DepthFirstOrder) dfs(g *Digraph, v int) {
 
 func (d *DepthFirstOrder) Pre() []int {
 	eles := make([]int, 0)
-	length := d.pre.Len()
-	for i := 0; i < length; i++ {
+	for d.pre.Len() > 0 {
 		eles = append(eles, d.pre.Dequeue().(int))
 	}
 	return eles
@@ -51,8 +50,7 @@ func (d *DepthFirstOrder) Pre() []int {
 
 func (d *DepthFirstOrder) Post() []int {
 	eles := make([]int, 0)
-	length := d.post.Len()
-	for i := 0; i < length; i++ {
+	for d.post.Len() > 0 {
 		eles = append(eles, d.post.Dequeue().(int))
 	}
 	return eles
@@ -60,8 +58,7 @@ func (d *DepthFirstOrder) Post() []int {
 
 func (d *DepthFirstOrder) ReversePost() []int {
 	eles := make([]int, 0)
-	length := d.reversePost.Len()
-	for i := 0; i < length; i++ {
+	for d.reversePost.Len() > 0 {
 		eles = append(eles, d.reversePost.Pop().(int))
 	}
 	return eles
