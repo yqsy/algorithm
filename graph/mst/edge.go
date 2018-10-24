@@ -9,7 +9,7 @@ type Edge struct {
 	w      int     // 另一顶点
 	weight float64 // 边的权重
 
-	index int // 在heap中的index
+	index int // 在heap中的原始index
 }
 
 func NewEdge(v, w int, weight float64) *Edge {

@@ -51,6 +51,7 @@ func (mst *LazyPrimMST) visit(g *EdgeWeightedGraph, v int) {
 
 	for _, e := range g.adj[v] {
 		if !mst.marked[e.Other(v)] {
+			// 邻居节点全部放到优先级队列里
 			heap.Push(&mst.pq, e)
 		}
 	}

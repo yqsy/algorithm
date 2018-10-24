@@ -11,8 +11,8 @@
 * 权重的边
 * 加权无向图
 * 延时Prim
-* 及时Prim
+* 及时Prim -- TODO
 * Kruskal
-* Fredman-Tarjan
-* Chazelle
-* 理想情况
+* Fredman-Tarjan -- TODO
+* Chazelle -- TODO
+* 理想情况 
