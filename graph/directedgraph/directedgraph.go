@@ -67,12 +67,9 @@ func (g *Digraph) String() string {
 	for v := 0; v < g.V; v++ {
 		s += strconv.Itoa(v) + ": "
 
-		for i, w := range g.adj[v] {
-			if i == len(g.adj[v])-1 {
-				s += strconv.Itoa(w)
-			} else {
-				s += strconv.Itoa(w) + "->"
-			}
+		for _, w := range g.adj[v] {
+			s += strconv.Itoa(w)
+			s += " "
 		}
 		s += "\n"
 	}

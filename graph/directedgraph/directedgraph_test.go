@@ -78,30 +78,16 @@ func TestDepthFirstOrder(t *testing.T) {
 
 	d := NewDepthFirstOrder(g)
 
-	length := d.pre.Len()
-	for i := 0; i < length; i++ {
-		ele := d.pre.Dequeue().(int)
-		fmt.Printf("%v ", ele)
-	}
-	fmt.Println()
+	fmt.Println(d.Pre())
 
-	length = d.post.Len()
-	for i := 0; i < length; i++ {
-		ele := d.post.Dequeue().(int)
-		fmt.Printf("%v ", ele)
-	}
-	fmt.Println()
+	fmt.Println(d.Post())
 
-	length = d.reversePost.Len()
-	for i := 0; i < length; i++ {
-		ele := d.reversePost.Pop().(int)
-		fmt.Printf("%v ", ele)
-	}
-	fmt.Println()
+	fmt.Println(d.ReversePost())
 
-	fmt.Println(g.String())
+	//fmt.Println(g.String())
 }
 
+// 拓扑排序
 func TestTopological(t *testing.T) {
 
 	s := NewSymbolGraph("jobs.txt", "/")
@@ -110,5 +96,41 @@ func TestTopological(t *testing.T) {
 
 	for _, v := range top.order {
 		fmt.Println(s.Name(v))
+	}
+}
+
+// Kosaraju 强连通算法
+func TestKosarajuSCC(t *testing.T) {
+	f, err := os.Open("tinyG.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer f.Close()
+
+	r := bufio.NewReader(f)
+	g := NewDigraphFromBufio(r)
+
+	cc := NewKosarajuSCC(g)
+
+	M := cc.Count()
+
+	fmt.Printf("%v compoents\n", M)
+
+	var compnents = make([][]int, M)
+
+	for i := 0; i < M; i++ {
+		compnents[i] = []int{}
+	}
+
+	for v := 0; v < g.V; v ++ {
+		compnents[cc.Id(v)] = append([]int{v}, compnents[cc.Id(v)]...)
+	}
+
+	for i := 0; i < M; i++ {
+		for _, v := range compnents[i] {
+			fmt.Printf("%v ", v)
+		}
+		fmt.Printf("\n")
 	}
 }

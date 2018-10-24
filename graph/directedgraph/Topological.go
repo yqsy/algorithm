@@ -12,13 +12,7 @@ func NewTopological(g *Digraph) *Topological {
 	if !cycleFinder.HasCycle() {
 		d := NewDepthFirstOrder(g)
 
-		length := d.reversePost.Len()
-
-		order := make([]int, 0)
-		for i := 0; i < length; i++ {
-			ele := d.reversePost.Pop().(int)
-			order = append(order, ele)
-		}
+		order := d.ReversePost()
 
 		if len(order) > 0 {
 			t.order = order

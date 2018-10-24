@@ -39,3 +39,30 @@ func (d *DepthFirstOrder) dfs(g *Digraph, v int) {
 	d.post.Enqueue(v)
 	d.reversePost.Push(v)
 }
+
+func (d *DepthFirstOrder) Pre() []int {
+	eles := make([]int, 0)
+	length := d.pre.Len()
+	for i := 0; i < length; i++ {
+		eles = append(eles, d.pre.Dequeue().(int))
+	}
+	return eles
+}
+
+func (d *DepthFirstOrder) Post() []int {
+	eles := make([]int, 0)
+	length := d.post.Len()
+	for i := 0; i < length; i++ {
+		eles = append(eles, d.post.Dequeue().(int))
+	}
+	return eles
+}
+
+func (d *DepthFirstOrder) ReversePost() []int {
+	eles := make([]int, 0)
+	length := d.reversePost.Len()
+	for i := 0; i < length; i++ {
+		eles = append(eles, d.reversePost.Pop().(int))
+	}
+	return eles
+}
