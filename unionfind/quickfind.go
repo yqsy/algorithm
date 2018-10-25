@@ -39,7 +39,7 @@ func NewQuickFindFromBufio(r io.Reader) *QuickFind {
 			continue
 		}
 
-		qf.union(p, q)
+		qf.Union(p, q)
 
 		fmt.Printf("%v %v\n", p, q)
 	}
@@ -53,17 +53,17 @@ func (qf *QuickFind) Count() int {
 }
 
 func (qf *QuickFind) Connected(p, q int) bool {
-	return qf.find(p) == qf.find(q)
+	return qf.Find(p) == qf.Find(q)
 }
 
-func (qf *QuickFind) find(p int) int {
+func (qf *QuickFind) Find(p int) int {
 	return qf.id[p]
 }
 
-func (qf *QuickFind) union(p, q int) {
+func (qf *QuickFind) Union(p, q int) {
 	// 将p和q归并到相同的分量中
-	pID := qf.find(p)
-	qID := qf.find(q)
+	pID := qf.Find(p)
+	qID := qf.Find(q)
 
 	// 如果p和q已经在相同的分量中则不需要采取任何行动
 	if pID == qID {

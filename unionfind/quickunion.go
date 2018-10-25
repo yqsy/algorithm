@@ -39,7 +39,7 @@ func NewQuickUnionFromBufio(r io.Reader) *QuickUnion {
 			continue
 		}
 
-		qu.union(p, q)
+		qu.Union(p, q)
 
 		fmt.Printf("%v %v\n", p, q)
 	}
@@ -53,19 +53,19 @@ func (qu *QuickUnion) Count() int {
 }
 
 func (qu *QuickUnion) Connected(p, q int) bool {
-	return qu.find(p) == qu.find(q)
+	return qu.Find(p) == qu.Find(q)
 }
 
-func (qu *QuickUnion) find(p int) int {
+func (qu *QuickUnion) Find(p int) int {
 	for p != qu.id[p] {
 		p = qu.id[p]
 	}
 	return p
 }
 
-func (qu *QuickUnion) union(p, q int) {
-	pRoot := qu.find(p)
-	qRoot := qu.find(q)
+func (qu *QuickUnion) Union(p, q int) {
+	pRoot := qu.Find(p)
+	qRoot := qu.Find(q)
 
 	if pRoot == qRoot {
 		return

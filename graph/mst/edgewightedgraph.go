@@ -55,3 +55,14 @@ func (g *EdgeWeightedGraph) AddEdge(e *Edge) {
 	g.adj[w] = append([]*Edge{e}, g.adj[w]...)
 	g.E++
 }
+
+func (g *EdgeWeightedGraph) Edges() []*Edge {
+	edges := make([]*Edge, 0)
+
+	for _, v := range g.adj {
+		for _, e := range v {
+			edges = append(edges, e)
+		}
+	}
+	return edges
+}

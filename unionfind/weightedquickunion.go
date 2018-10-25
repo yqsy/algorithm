@@ -43,7 +43,7 @@ func NewWeightedQuickUnionUFFromBufio(r io.Reader) *WeightedQuickUnionUF {
 			continue
 		}
 
-		qu.union(p, q)
+		qu.Union(p, q)
 
 		fmt.Printf("%v %v\n", p, q)
 	}
@@ -57,19 +57,19 @@ func (wuf *WeightedQuickUnionUF) Count() int {
 }
 
 func (wuf *WeightedQuickUnionUF) Connected(p, q int) bool {
-	return wuf.find(q) == wuf.find(p)
+	return wuf.Find(q) == wuf.Find(p)
 }
 
-func (wuf *WeightedQuickUnionUF) find(p int) int {
+func (wuf *WeightedQuickUnionUF) Find(p int) int {
 	for p != wuf.id[p] {
 		p = wuf.id[p]
 	}
 	return p
 }
 
-func (wuf *WeightedQuickUnionUF) union(p, q int) {
-	i := wuf.find(p)
-	j := wuf.find(q)
+func (wuf *WeightedQuickUnionUF) Union(p, q int) {
+	i := wuf.Find(p)
+	j := wuf.Find(q)
 
 	if i == j {
 		return
