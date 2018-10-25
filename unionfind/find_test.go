@@ -7,6 +7,7 @@ import (
 	"testing"
 )
 
+// quick find
 func TestQuickFind(t *testing.T) {
 	f, err := os.Open("tinyUF.txt")
 	if err != nil {
@@ -48,6 +49,7 @@ func TestQuickFindMediumUF(t *testing.T) {
 	NewQuickFindFromBufio(r)
 }
 
+// union find
 func TestUnionFind(t *testing.T) {
 	f, err := os.Open("tinyUF.txt")
 	if err != nil {
@@ -60,4 +62,19 @@ func TestUnionFind(t *testing.T) {
 
 	// print
 	NewQuickUnionFromBufio(r)
+}
+
+// 加权 union find
+func TestWeightedQuickUnionUF(t *testing.T) {
+	f, err := os.Open("tinyUF.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	defer f.Close()
+
+	r := bufio.NewReader(f)
+
+	// print
+	NewWeightedQuickUnionUFFromBufio(r)
 }
