@@ -8,6 +8,7 @@ import (
 	"testing"
 )
 
+// 优先级队列
 func TestPriorityQueue(t *testing.T) {
 	edge3 := &Edge{weight: 3.0}
 	edge2 := &Edge{weight: 2.0}
@@ -27,6 +28,7 @@ func TestPriorityQueue(t *testing.T) {
 	}
 }
 
+// 延时prime
 func TestLazyPrimMST(t *testing.T) {
 	f, err := os.Open("tinyEWG.txt")
 	if err != nil {
@@ -45,3 +47,9 @@ func TestLazyPrimMST(t *testing.T) {
 		fmt.Println(e.String())
 	}
 }
+
+// 及时 prime TODO
+func TestPrimeMST(t *testing.T) {
+
+}
+
