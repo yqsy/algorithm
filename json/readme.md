@@ -28,7 +28,6 @@ number|浮点数|默认|float64
 array|[]|[开头|[]interface{}
 object|{...}|{开头|map[string]interface{}
 
-
 空白
 * 空格符 " "
 * 制表符 "\t"
