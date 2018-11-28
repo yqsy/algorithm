@@ -57,6 +57,10 @@ union-find
 
 * [unionfind](unionfind/unionfind)
 
+hash碰撞
+
+* [cuckoohash](cuckoohash)
+
 
 字符串
 * KMP
